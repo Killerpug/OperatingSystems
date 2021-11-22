@@ -204,8 +204,9 @@ image::images/7_virtualization.jpg[]
 
 
 
-
-
+TBD
+* file descriptors
+* function calls
 
 
 
