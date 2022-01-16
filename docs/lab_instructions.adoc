@@ -87,3 +87,32 @@ Add your sleep program to UPROGS in Makefile; once you've done that, make qemu w
 
 ### ping-pong with pipes
 Write a program that uses UNIX system calls to ping-pong **a byte between two processes over a pair of pipes, one for each direction**. The parent should send a byte to the child; the child should print "<pid>: received ping", where <pid> is its process ID, write the byte on the pipe to the parent, and exit; the parent should read the byte from the child, print "<pid>: received pong", and exit. Your solution should be in the file user/pingpong.c. 
+
+#### Inter-Process Communication
+When we use *fork* in any process, file descriptors remain open across child process and also parent process. If we call fork after creating a pipe, then the parent and child can communicate via the pipe.
+
+.Inter Process Communication with pipes
+[uml,file="IPC_pipes.png"]
+--
+node "parent process" {
+[fd0, read ] as fd0parent
+[fd1, write] as fd1parent
+}
+
+node "child process" {
+[fd0, read ] as fd0child
+[fd1, write] as fd1child
+}
+
+node "kernel" {
+[ ipc_parent_to_child: parent writes, child reads] as pipe1
+[ ipc_child_to_parent: child writes, parent reads] as pipe2
+}
+
+[fd1parent] -d-> [pipe1]
+[fd1child] -d-> [pipe2]
+[pipe1] -u-> [fd0child]
+[pipe2] -u-> [fd0parent]
+--
+
+

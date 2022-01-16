@@ -128,10 +128,18 @@ xv6 time-shares processes, this means that it transparently switches available C
 * waiting: the process is not executing, it is waiting for a resource.
 
 ##### process creation
-a process may create a new process using [green]#**fork**# system call. fork gives the new process exactly the same memory contents(instructions and data) as the calling process.
+a process may create a new process using [green]#**fork**# system call. fork gives the new process exactly the same memory contents(instructions and data) as the calling process. After child is created, both process will execute the following instructions.
 ```
 int pid = fork();
 ```
+
+##### Analogy for processes and threads
+
+- A process as a house: A house is really a container, with certain attributes (such as the amount of floor space, the number of bedrooms, and so on). If you look at it that way, the house really doesn't actively do anything on its own — it's a passive object. 
+- The occupants as threads: The people living in the house are the active objects — they're the ones using the various rooms, watching TV, cooking, taking showers, and so on.
+. **Single threaded**: If you've ever lived on your own, you know that you can do anything you want in the house at any time, because there's nobody else in the house. 
+. **Multi threaded**: Things change dramatically when you add another person into the house. Let's say you get married, so now you have a spouse living there too. You can't just march into the washroom at any given point; you need to check first to make sure your spouse isn't in there. If you have two responsible adults living in a house, generally you can be reasonably lax about “security” — you know that the other adult will respect your space, won't try to set the kitchen on fire (deliberately!), and so on.
+Now, throw a few kids into the mix and suddenly things get a lot more interesting.
 
 #### thread
 A thread is just the flow of execution or control within one process. A process has attributes like:
@@ -150,8 +158,7 @@ A file descriptor(often refered as file) is a small integer representing a kerne
 by default, these are file descriptors for the console.
 
 #### pipes
-a pipe is a small kernel buffer exposed to processes as a pair of file descriptors (reading-fd, writing-fd). Writing data to one end of the pipe makes that data available for reading from
-the other end of the pipe, this is the way inter-process communications happens.
+a pipe is a small kernel buffer exposed to processes as a pair of file descriptors (reading-fd, writing-fd). Writing data to one end of the pipe makes that data available for reading from the other end of the pipe, this is the way inter-process communications happens.
 
 #### file system and links
 ##### file system
@@ -311,7 +318,7 @@ However, xv6 is NOT POSIX-compliant because it misses many system calls(like lse
 [width="100%",options="header,footer"]
 |====================
 |System call| Description
-|int fork()| Create a process, by cloning the parents file descriptor table along with its memory. return child’s PID.
+|int fork()| Create a process, by cloning the parents file descriptor table along with its memory. returns 0 to the child process and a positive value to the parent, which contains the pid of the child.
 |int exit(int status)| Terminate the current process; status reported to wait(). No return.
 |int wait(int *status)| Wait for a child to exit; exit status in *status; returns child PID.
 |int kill(int pid)| Terminate process PID. Returns 0, or -1 for error.
@@ -321,11 +328,11 @@ However, xv6 is NOT POSIX-compliant because it misses many system calls(like lse
 ELF format; only returns if error.
 |char *sbrk(int n)| Grow process’s memory by n bytes. Returns start of new memory.
 |int open(char *file, int flags)| Open a file; flags indicate read/write; returns an fd (file descriptor).
-|int write(int fd, char *buf, int n)| Write n bytes from buf to file descriptor fd; returns n.
-|int read(int fd, char *buf, int n)| Read n bytes into buf; returns number read; or 0 if end of file.
+|int write(int fd, char *buf, int n)| Write up to n bytes from buf to file descriptor fd; returns the number of bytes written.
+|int read(int fd, char *buf, int n)| Read up to n bytes into buf; returns the number bytes readed; or 0 if end of file.
 |int close(int fd)| Release open file fd.
 |int dup(int fd)| Return a new file descriptor referring to the same file as fd.
-|int pipe(int p[])| Create a pipe, put read/write file descriptors in p[0] and p[1].
+|int pipe(int p[2])| Create a small buffer on which Writing data to one end of the pipe makes that data available for reading from the other end of the pipe via file descriptors in p[0] and p[1]. If a process tries to read before something is written to the pipe, the process is suspended until something is written.
 |int chdir(char *dir)| Change the current directory.
 |int mkdir(char *dir)| Create a new directory.
 |int mknod(char *file, int, int)| Create a device file.
