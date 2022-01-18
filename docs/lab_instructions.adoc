@@ -115,4 +115,28 @@ node "kernel" {
 [pipe2] -u-> [fd0parent]
 --
 
+### Sieve primes
+Write a concurrent version of prime sieve using pipes.  For each prime number, you will arrange to create one process that reads from its left neighbor over a pipe, drops all numbers that are divisible by that number, and writes to its right neighbor over another pipe.
+
+image::10_primes_sieve.png[]
+
+The idea of McIlroy can be explained as follows:
+```
+p = get a number from left neighbor
+print p
+loop:
+    n = get a number from left neighbor
+    if (p does not divide n)
+        send n to right neighbor
+```
+A generating process can feed the numbers 2, 3, 4, ..., 1000 into the left end of the pipeline: the first process in the line eliminates the multiples of 2, the second eliminates the multiples of 3, the third eliminates the multiples of 5, and so on.
+
+note: xv6 file descriptors are limited, so only feed the numbers up to 35.
+
+#### About synchronization mechanisms
+By 1978 there were many methods for communication and synchronization, *shared memory* was the most common communication mechanism, and semaphores, critical regions, and monitors were among the synchronization mechanisms.
+
+However, Hoare addressed both issues with a single language primitive: **synchronous communication**. In Hoare's CSP language, processes communicate by sending or receiving values from named unbuffered channels. Since the channels are unbuffered, the **send operation blocks until the value has been transferred to a receiver**, thus providing a mechanism for synchronization
+
+
 
