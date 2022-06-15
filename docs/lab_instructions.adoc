@@ -58,7 +58,7 @@ node "Kernel space"{
     [**process information**\n process->trpframe->a0: n_ticks] as process_info
 }
 node "Hardware"{
-    [**process table**\n processes allocate uc memory at startup.\n Each process has: \n state,\n pid,\n stack,\n size,\n user_table,\n **trapframe**:handles code during traps \n and saves user registers like arguments,\n context: structure for context switches ] as proc
+    [**process table**(in memory)\n processes allocate uc memory at startup.\n Each process has: \n state,\n pid,\n stack,\n size,\n user_table,\n **trapframe**:handles code during traps \n and saves user registers like arguments,\n context: structure for context switches ] as proc
     [**timer tick**\n hardware is programmed to provide 1/10th of a second ticks] as tick
 }
 
@@ -75,7 +75,7 @@ node "Hardware"{
 --
 
 #### arguments
-command-line arguments are passed from the shell to the kernel using the process memory table. We retrieve the argument from process memory using argint(int an, int *ip) funciton, where an is argument_number and ip is a reference to the storage variable[type uint64].
+command-line arguments are passed from the shell to the kernel using the process memory table. We retrieve the argument from process memory using argint(int an, int *ip) funciton, where an is argument_number and ip is a reference to the stored variable[type uint64].
 
 #### user-kernel space systemcall mapping
 xv6 maps user calls to kernel calls by mapping them, using a function pointer in syscall.c. Note that on usys.S and user.h we define the number of syscall to which user call is mapped from.
@@ -100,8 +100,8 @@ node "parent process" {
 }
 
 node "child process" {
-[fd0, read ] as fd0child
-[fd1, write] as fd1child
+[fd1, read ] as fd0child
+[fd0, write] as fd1child
 }
 
 node "kernel" {
@@ -138,5 +138,5 @@ By 1978 there were many methods for communication and synchronization, *shared m
 
 However, Hoare addressed both issues with a single language primitive: **synchronous communication**. In Hoare's CSP language, processes communicate by sending or receiving values from named unbuffered channels. Since the channels are unbuffered, the **send operation blocks until the value has been transferred to a receiver**, thus providing a mechanism for synchronization
 
-
-
+### find
+Write a simple version of the UNIX find program: find all the files in a directory tree with a specific name. Your solution should be in the file user/find.c

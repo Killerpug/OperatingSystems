@@ -121,7 +121,7 @@ Each **running program is called process** and it allocates some resources, such
 image::8_proces_thread.jpg[]
 
 ##### process states
-xv6 time-shares processes, this means that it transparently switches available CPU(s) among the set of processes *ready* to execute processes. a process can be in either of the following states:
+xv6 time-shares processes, this means that it transparently switches available CPU cores among the set of processes *ready* to execute processes. a process can be in either of the following states:
 
 * idle
 * ready: the process is ready to be queued for CPU execution
@@ -165,15 +165,36 @@ a pipe is a small kernel buffer exposed to processes as a pair of file descripto
 The directories form a tree, starting at a special directory called the root. A path like /a/b/c refers to the file or directory named c inside the directory named b inside the directory named a in the root directory /. 
 
 Paths that don’t begin with / are evaluated relative to the calling process’s current directory, which can
-be changed with the *chdir* system call
+be changed with the *chdir()* system call.
+
+There are system calls to create new files and directories: *mkdir()* creates a new directory, *open()*
+with the O_CREATE flag creates a new data file, and *mknod()* creates a new device file.
 
 ##### Links
-The link system call creates another file system name referring to the same inode as an exist file.
+A File-descriptor is also called *inode*, because it may have multiple names linking to the same object and some metadata. The *link()* system call creates another file-name referring to the same inode as an exist file.
 ```
+//Reading from or writing to "a" is the same as reading from or writing to "b". This is known as *symbolic links* in UNIX systems.
 open("a", O_CREATE|O_WRONLY);
 link("a", "b");
 ```
-Reading from or writing to a is the same as reading from or writing to b. This is known as symbolic links in UNIX systems.
+
+
+Finally, since file-descriptors/inodes have more information than name and some data, *fstat()* system call retrieves information from the inode that a file-name refers to. It
+fills in a struct **stat**, defined in stat.h (kernel/stat.h) as:
+
+```
+#define T_DIR 1 // Directory
+#define T_FILE 2 // File
+#define T_DEVICE 3 // Device
+
+struct stat {
+    int dev;        // File system’s disk device
+    uint ino;       // Inode number(per-process table, id for the file descriptor)
+    short type;     // Type of file(directory, file, device).
+    short nlink;    // Number of links to file
+    uint64 size;    // Size of file in bytes
+};
+```
 
 ### Computer Architecture
 #### Startup:
@@ -306,7 +327,7 @@ xv6 implements Unix-like interface.
 
 **POSIX**, which stands for Portable Operating System Interface, represents a set of standards for UNIX-based operating systems. For example, having input in file descriptor 0 and output in file descriptor 1.
 
-However, xv6 is NOT POSIX-compliant because it misses many system calls(like lseek and others) and also does bot provide the notion of users or protecting one user from another(everything is root). Modern kernels, provide many more system calls, networking, windowing systems, user-level threads, drivers but our scope is to learn the basics so xv6 is enough and simpler than many.
+However, xv6 is NOT POSIX-compliant because it misses many system calls(like lseek and others) and also does not provide the notion of users or protecting one user from another(everything is root). Modern kernels, provide many more system calls, networking, windowing systems, user-level threads, drivers but our scope is to learn the basics so xv6 is enough and simpler than many.
 
 *Linux*: Its Just the GNU libraries, with many UNIX-compatible tools (compilers, editors, utilities) *+ the kernel* developed by Linus Torvalds(**Linux**)., resulting in GNU/Linux.
 

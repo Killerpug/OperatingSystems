@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
         printf("pid: %d. child reads: %s\n", pid, buffer);
         write(ipc_child_to_parent[1], "pong", 4);                 // write pong
     } else { //parent process
+        printf("pid: %d. parent sends ping\n", pid);
         write(ipc_parent_to_child[1], "ping", 4);                  // write ping
         read(ipc_child_to_parent[0], buffer, sizeof(buffer));     //receive pong
         printf("pid: %d. parent receives: %s\n", pid, buffer);
