@@ -72,7 +72,7 @@ A computer consist of one or more processors, main memory, registers, IO devices
 .ARM microcontroller
 image::images/1_armCore.jpg[]
 
-The basic cycle of every CPU is to <<fetch-instruction>> the first instruction from memory, decode it to determine its type and operands, execute it, and then fetch, decode, and execute subsequent instructions. The set of instructions is [red]#specific to the architecture of the CPU#, so if every application had to understand how all these things work in detail, no code would be portable. Furthermore, managing all these components optimally is challenging. This is the reason computers have a software layer called **operating system**, whose job is to provide handling of this computer model [green]#**making the applications reusable and also needing to write the OS only once per CPU architecture.**#
+The basic cycle of every CPU is to <<fetch-instruction>> the first instruction from memory, decode it to determine its type and operands, execute it, and then fetch, decode, and execute subsequent instructions. The set of instructions(ISA) is [red]#specific to the architecture of the CPU#, so if every application had to understand how all these things work in detail, no code would be portable. Furthermore, managing all these components optimally is challenging. This is the reason computers have a software layer called **operating system**, whose job is to provide handling of this computer model [green]#**making the applications reusable and also needing to write the OS only once per CPU architecture.**#
 
 [[computer-stack]]
 .computer stack
@@ -83,13 +83,67 @@ This 2 modes are blurred in embedded systems, because they may not have an OS at
 
 NOTE: You can also see that *system calls* are the interface between user and kernel mode. Operative systems differ from user programs in location of residence, complexity, long-lived. The source code of Linux OS is on the order of 5 million lines of code. So *Operative systems are hard to write, hence, not easy to replace.*
 
+### Computer Architecture
+
+#### Executing instructions:  
+A CPU can load instructions only from memory, so any programs to run must be stored there. General purpose computers run the program from r/w memory (RAM). Fetch instruction receives an instruction from ROM(Flash in this case) and uses load-store instructions to process data, load moves a word or byte from main memory to internal register within CPU and store moves the content of the register to main memory
+
+[[fetch-instruction]]
+.fetch instructions
+image::images/3_computerInstructions.jpg[]
+
+#### Types of Data transfering
+
+*Interrupt Driven I/O:*
+
+The IO device send data to the device controller, which examines the contents, transfers the data and informs the CPU via interrupt(one interrupt per byte) that the IO device requires operation and the OS responds with the required operation. This works fine for small amounts of data. But produce high overhead when used for bulk data movement such as disk IO.
+
+*DMA:*
+
+After setting buffers, pointers and counters for IO device, device controller transfers an entire block of data directly to or from its own buffer storage to memory without CPU intervention(only one interrupt per block).
+
+
+#### Startup:
+When a computer its powered up or rebooted the bootloader runs, a simple program stored in ROM or EEPROM. It initializes all aspects of the system: from CPU registers to device controllers and memory contents. It also must know how to locate and load the OS and start executing the *kernel* (which is the program that runs all the time.)
+
+#### Interrupts/exceptions: 
+
+* Hardware → physical signals either from peripherals or the cpu itself. 
+* Software → executing special operation called **system call**(provide means for a user to ask the OS to perform tasks reserved for the OS). 
+
+*General interrupt/exception process*
+
+When an exception or interrupt occurs, execution transition from user mode to kernel mode where the exception or interrupt is handled takes place as follows.
+
+[[interrupt-process]]
+.interrupt process overview
+image::images/4_overviewInterrupt.jpg[]
+
+*Interruption process on ARM microcontrollers:*
+
+1) To save the context:
+
+In parallel, save(push) the address of the interrupted instruction in the Program Counter. Also, we store status register(xPSR), LR and registers R0, R1, R2, R3 and R12.
+
+image::images/5_IRQsavestate.jpg[]
+
+2) Then, to handle the exception or interruption:
+
+Computer locates the IRQn on the vector table, which contains the *address of the interrupt handler(ISR)*. Finally, code on that handler function is executed and once its finished, the context is restored.
+
+.ISR location on Vector table 
+image::images/6_ISRhandler.png[]
+
+Since only a predefined number of interrupts is possible, a table of pointers to interrupt handling routines is commonly used to provide speed, this table of pointers is stored in low memory and is called interrupt vector (inside vector table).
+
+
 ### What is an operating system?
 An operating systems acts as an intermediary between the applications in a computer and the hardware(see <<computer-stack>>, so its basically a driver). The OS is a program that manages a computers resources by offering services(cpu time, memory space via file storage, IO operations). An OS can be designed to be convenient or efficient but the *main goals  of an OS are:*
 
 * Abstract: hardware for portability and convinience.
 * Multiplexing: allow multiple applications to share hardware and cooperate while isolating programs to provide security.
 
-##### The Operating System is responsible of:
+##### OS Responsibilities
 
 * Scheduling processes and threads on the CPUs. And allocating the pertinent resources.
 * Creating and deleting both user and system processes.
@@ -101,15 +155,28 @@ An operating systems acts as an intermediary between the applications in a compu
 * Allocating and deallocating memory space as needed
 
 ### OS Organization
-#### kernel 
-XV6 OS takes the form of a kernel, a special program that provides services to running programs. A kernel has direct access to hardware components like RAM, CPU, DISK... and it implements abstractions to that HW via modules/programs like: File system(tree directory, file contents), memory allocation, IO maganer... that provide common kernel services to different programs in user space as shown.
+
+#### Abstracting pysical resources
+
+#### Kernel 
+XV6 OS takes the form of a kernel, a special program that provides services to running programs. A kernel has direct access to hardware components like RAM, CPU, DISK... and it implements abstractions to that HW via modules/programs like: File system(tree directory, file contents), memory allocation, IO manager... that provide common kernel services to different programs in user space as shown.
 
 image::9_kernel_services.jpg[]
 
-#### system calls
-Programs can execute kernel services via system calls, which execute in a similar way to <<interrupt-process>> because systems calls are a special type of exceptions. <<system-calls-xv6>>, are the main interface for users to request  the execution of kernel privileged-code that affects resources of the computer.
+#### System calls
+Programs can execute kernel services via system calls, which execute in a similar way to <<interrupt-process>> because systems calls are a special type of exceptions. <<system-calls-xv6>>, are the main interface for users to request  the execution of kernel resources (privileged-code that affects physical resources of the computer).
 
-#### process
+#### Process and Threads
+
+##### Analogy for processes and threads
+
+- A process as a house: A house is really a container, with certain attributes (such as the amount of floor space, the number of bedrooms, and so on). If you look at it that way, the house really doesn't actively do anything on its own — it's a passive object. 
+- The occupants as threads: The people living in the house are the active objects — they're the ones using the various rooms, watching TV, cooking, taking showers, and so on.
+. **Single threaded**: If you've ever lived on your own, you know that you can do anything you want in the house at any time, because there's nobody else in the house. 
+. **Multi threaded**: Things change dramatically when you add another person into the house. Let's say you get married, so now you have a spouse living there too. You can't just march into the washroom at any given point; you need to check first to make sure your spouse isn't in there. If you have two responsible adults living in a house, generally you can be reasonably lax about “security” — you know that the other adult will respect your space, won't try to set the kitchen on fire (deliberately!), and so on.
+Now, throw a few kids into the mix and suddenly things get a lot more interesting.
+
+##### Process
 Each **running program is called process** and it allocates some resources, such as: 
 
 * memory(for instructions, data, stack...) 
@@ -133,35 +200,46 @@ a process may create a new process using [green]#**fork**# system call. fork giv
 int pid = fork();
 ```
 
-##### Analogy for processes and threads
 
-- A process as a house: A house is really a container, with certain attributes (such as the amount of floor space, the number of bedrooms, and so on). If you look at it that way, the house really doesn't actively do anything on its own — it's a passive object. 
-- The occupants as threads: The people living in the house are the active objects — they're the ones using the various rooms, watching TV, cooking, taking showers, and so on.
-. **Single threaded**: If you've ever lived on your own, you know that you can do anything you want in the house at any time, because there's nobody else in the house. 
-. **Multi threaded**: Things change dramatically when you add another person into the house. Let's say you get married, so now you have a spouse living there too. You can't just march into the washroom at any given point; you need to check first to make sure your spouse isn't in there. If you have two responsible adults living in a house, generally you can be reasonably lax about “security” — you know that the other adult will respect your space, won't try to set the kitchen on fire (deliberately!), and so on.
-Now, throw a few kids into the mix and suddenly things get a lot more interesting.
-
-#### thread
+##### thread
 A thread is just the flow of execution or control within one process. A process has attributes like:
 
 * priority
 * scheduling algorithm
 * registers, CPU mask for multicore, signals and more
 
+so that multiple threads can be execute within one mediator-process. Basically a process changes executing thread according to scheduling policy.
+
+
+
+### OS Interfaces
+The job of an operating system is to share a computer among multiple programs and to provide a more useful set of services than the hardware alone supports. An OS makes abstractions of hardware so that programs do not concern about underlying hardware and at the same time facilitate the interaction between programs<-->OS.
+
 #### File descriptors for I/O
-A file descriptor(often refered as file) is a small integer representing a kernel-managed object that a process may read from or write to. File descriptors are obtained by opening a file, directory or device. xv6 uses file descriptor as an index into a per-process table, so that every process has a private space of file descriptors starting at zero. By convention, a process:
+A file descriptor(often refered as **file**) is a small integer representing a kernel-managed [green]#**object that a process may read from or write to**#. File descriptors are obtained by opening a file, directory or device. xv6 uses file descriptor as an index into a per-process table, so that every process has a private space of file descriptors starting at zero. By convention, a process:
 
 * reads from file descriptor 0(standard input)
-* writes to output file descriptor 1(standard output)
+* writes to file descriptor 1(standard output)
 * writes error messages to file descriptor 2(std error)
 
-by default, these are file descriptors for the console.
+by default, these are the file descriptors for the console. The shell exploit this convention to implement I/O redirection and pipelines(eg: echo hello | wordCount).
 
-#### pipes
-a pipe is a small kernel buffer exposed to processes as a pair of file descriptors (reading-fd, writing-fd). Writing data to one end of the pipe makes that data available for reading from the other end of the pipe, this is the way inter-process communications happens.
+##### Reading and writing into a file
+Reading and writing is perform via system calls.
+
+* read(fd, buf, n): reads at most n bytes from the file descriptor fd, copies
+them into buf, and returns the number of bytes read.
+** If no data is available, a read on a pipe waits for either data to be written or for all file descriptors referring to the write end to be closed; in the latter case, read will return 0, just as if the end of a data file had been reached.
+* write(fd, buf, n):writes n bytes from buf to the file descriptor fd and returns the number of bytes written. 
+** each write picks up where the previous one left off
+
+#### Pipes
+A pipe is a small kernel buffer exposed to processes as a pair of file descriptors (reading-fd, writing-fd). Writing data to one end of the pipe makes that data available for reading from the other end of the pipe, this is the way inter-process communications happens.
+
+
 
 #### file system and links
-##### file system
+##### File system
 The directories form a tree, starting at a special directory called the root. A path like /a/b/c refers to the file or directory named c inside the directory named b inside the directory named a in the root directory /. 
 
 Paths that don’t begin with / are evaluated relative to the calling process’s current directory, which can
@@ -196,74 +274,6 @@ struct stat {
 };
 ```
 
-### Computer Architecture
-#### Startup:
-When a computer its powered up or rebooted the bootloader runs, a simple program stored in ROM or EEPROM. It initializes all aspects of the system: from CPU registers to device controllers and memory contents. It also must know how to locate and load the OS and start executing the *kernel* (which is the program that runs all the time.)
-
-#### Interrupts/exceptions: 
-
-* Hardware → physical signals either from peripherals or the cpu itself. 
-* Software → executing special operation called **system call**(provide means for a user to ask the OS to perform tasks reserved for the OS). 
-
-*General interrupt/exception process*
-
-When an exception or interrupt occurs, execution transition from user mode to kernel mode where the exception or interrupt is handled takes place as follows.
-
-[[interrupt-process]]
-.interrupt process overview
-image::images/4_overviewInterrupt.jpg[]
-
-*Interruption process on ARM microcontrollers:*
-
-1) To save the context:
-
-In parallel, save(push) the address of the interrupted instruction in the Program Counter. Also, we store status register(xPSR), LR and registers R0, R1, R2, R3 and R12.
-
-image::images/5_IRQsavestate.jpg[]
-
-2) Then, to handle the exception or interruption:
-
-Computer locates the IRQn on the vector table, which contains the *address of the interrupt handler(ISR)*. Finally, code on that handler function is executed and once its finished, the context is restored.
-
-.ISR location on Vector table 
-image::images/6_ISRhandler.png[]
-
-Since only a predefined number of interrupts is possible, a table of pointers to interrupt handling routines is commonly used to provide speed, this table of pointers is stored in low memory and is called interrupt vector (inside vector table).
-
-#### Fetching instructions:  
-A CPU can load instructions only from memory, so any programs to run must be stored there. General purpose computers run the program from r/w memory (RAM). Fetch instruction receives an instruction from ROM(Flash in this case) and uses load-store instructions to process data, load moves a word or byte from main memory to internal register within CPU and store moves the content of the register to main memory
-
-[[fetch-instruction]]
-.fetch instructions
-image::images/3_computerInstructions.jpg[]
-
-#### Types of Data transfering
-
-*Interrupt Driven I/O:*
-
-The IO device send data to the device controller, which examines the contents, transfers the data and informs the CPU via interrupt(one interrupt per byte) that the IO device requires operation and the OS responds with the required operation. This works fine for small amounts of data. But produce high overhead when used for bulk data movement such as disk IO.
-
-*DMA:*
-
-After setting buffers, pointers and counters for IO device, device controller transfers an entire block of data directly to or from its own buffer storage to memory without CPU intervention(only one interrupt per block).
-
-#### System processors	
-*Single-processor system:*
-
-On single processor systems, there is one main CPU capable of executing the full general purpose instruction set and user processes. However, almost all of them, have special-purpose processors to deal with specific devices or mainframes to move data rapidly. The special purpose processors run a limited instruction set, they are managed by the OS or via special hardware.
-
-*Multiprocessor/multicore/parallel systems:* 
-
-systems with 2 or more processor with shared bus and optionally clock, memory, peripherals. Advantages → increased throughput, economy due to sharing of electronic, reliability(ability to keep providing service proportional to the surviving hardware, also called“graceful degradation” or “fault tolerant”).
-
-[underline]#Asymmetric multiprocessing:# each processor is assigned a specific task. A Boss processor control the system and the other attends the boss or performs predefined task(IO for example).
-
-[underline]#Symmetric multiprocessing:#
-both processors performs all task within OS. Peer processors, could serve as redundancy or to divide workload(but [red]#shared resources must be carefully controlled#)
-
-*multicore systems:*
-
-more efficient and less power consumption by including multiple cores(processors) on a single chip.
 
 ### Memory Management
 
@@ -288,22 +298,6 @@ scheme that enables users to run programs larger than actual physical memory. Al
 image::images/7_virtualization.jpg[]
 
 *Interpretation:* another type of emulation occurs when a computer language is not compiled to native code but instead is either executed in its high-level form or translated to an intermediate form. This is known as interpretation(Java is always interpreted, thats why we require a Java Virtual Machine).
-
-
-
-
-## Operating system Interfaces
-
-### Processes and Memory
-
-
-
-TBD
-* file descriptors
-* function calls
-
-
-
 
 
 
