@@ -3,7 +3,8 @@
 :encoding: utf-8
 :lang: en
 :toc: left
-:numbered:
+:numbered: 
+:toclevels: 3  
 :imagesdir: images
 :source-language: C
 
@@ -65,30 +66,43 @@ With the development of Large Scale Integration circuits, chips containing thous
 
 
 
-## Overview
+## Fundamentals
 A computer consist of one or more processors, main memory, registers, IO devices, memory controller and other physical components; all in one complex system as shown. 
 
 .ARM microcontroller
 image::images/1_armCore.jpg[]
 
-The basic cycle of every CPU is to <<fetch-instruction>> the first instruction from memory, decode it to determine its type and operands, execute it, and then fetch, decode, and execute subsequent instructions. The set of instructions is specific to the architecture of the CPU, so if every application had to understand how all these things work in detail, no code would be portable. Furthermore, managing all these components optimally is challenging. This is the reason computers have a software layer called **operating system**, whose job is to provide handling of this computer model.
+The basic cycle of every CPU is to <<fetch-instruction>> the first instruction from memory, decode it to determine its type and operands, execute it, and then fetch, decode, and execute subsequent instructions. The set of instructions(ISA) is [red]#specific to the architecture of the CPU#, so if every application had to understand how all these things work in detail, no code would be portable. Furthermore, managing all these components optimally is challenging. This is the reason computers have a software layer called **operating system**, whose job is to provide handling of this computer model [green]#**making the applications reusable and also needing to write the OS only once per CPU architecture.**#
 
 [[computer-stack]]
 .computer stack
 image::images/2_OSoverview.jpg[]
 
-On top of the hardware is software, computers have two modes of operation(defined in the mode bit): **kernel mode**(0, fundamental piece of software, also called supervisor/privileged mode, which has complete access to ALL hardware and can execute ANY instruction) and **user mode**(1, subset of instructions. Forbids any instruction that affect the control of the machine or does I/O, but it has some privileged instructions, only executable on kernel mode).  
+On top of the hardware is software, computers have two modes of operation(defined in the mode bit): **kernel mode**(0, fundamental piece of software, also called supervisor/privileged mode, which has complete access to ALL hardware and can execute ANY instruction) and **user mode**(1, subset of instructions. Forbids any instruction that affect the control of the machine or does I/O).  
 This 2 modes are blurred in embedded systems, because they may not have an OS at all. Also some programs allow the users to help the OS or perform privileged functions(syscalls).
 
-NOTE: You can also see that *system calls* are the interface between user and kernel mode. Operative systems differ from user programs in location of residence, complexity, long-lived. The source code of Linux is on the order of 5 million lines of code. So they are hard to write, hence, not easy to replace. 
+NOTE: You can also see that *system calls* are the interface between user and kernel mode. Operative systems differ from user programs in location of residence, complexity, long-lived. The source code of Linux OS is on the order of 5 million lines of code. So *Operative systems are hard to write, hence, not easy to replace.*
 
-### What is an operating system?
-An operating systems acts as an intermediary between the applications in a computer and the hardware(see <<computer-stack>>, so its basically a driver). The OS is a program that manages a computers resources by offering services(cpu time, memory space via file storage, IO operations). An OS can be designed to be convenient or efficient but the *main goals  of an OS are:*
+### Computer Architecture
 
-* Abstract: hardware for portability and convinience.
-* Multiplexing: allow multiple applications to share hardware and cooperate while isolating programs to provide security.
+#### Executing instructions:  
+A CPU can load instructions only from memory, so any programs to run must be stored there. General purpose computers run the program from r/w memory (RAM). Fetch instruction receives an instruction from ROM(Flash in this case) and uses load-store instructions to process data, load moves a word or byte from main memory to internal register within CPU and store moves the content of the register to main memory
 
-### Computer system organization
+[[fetch-instruction]]
+.fetch instructions
+image::images/3_computerInstructions.jpg[]
+
+#### Types of Data transfering
+
+*Interrupt Driven I/O:*
+
+The IO device send data to the device controller, which examines the contents, transfers the data and informs the CPU via interrupt(one interrupt per byte) that the IO device requires operation and the OS responds with the required operation. This works fine for small amounts of data. But produce high overhead when used for bulk data movement such as disk IO.
+
+*DMA:*
+
+After setting buffers, pointers and counters for IO device, device controller transfers an entire block of data directly to or from its own buffer storage to memory without CPU intervention(only one interrupt per block).
+
+
 #### Startup:
 When a computer its powered up or rebooted the bootloader runs, a simple program stored in ROM or EEPROM. It initializes all aspects of the system: from CPU registers to device controllers and memory contents. It also must know how to locate and load the OS and start executing the *kernel* (which is the program that runs all the time.)
 
@@ -101,6 +115,7 @@ When a computer its powered up or rebooted the bootloader runs, a simple program
 
 When an exception or interrupt occurs, execution transition from user mode to kernel mode where the exception or interrupt is handled takes place as follows.
 
+[[interrupt-process]]
 .interrupt process overview
 image::images/4_overviewInterrupt.jpg[]
 
@@ -121,46 +136,14 @@ image::images/6_ISRhandler.png[]
 
 Since only a predefined number of interrupts is possible, a table of pointers to interrupt handling routines is commonly used to provide speed, this table of pointers is stored in low memory and is called interrupt vector (inside vector table).
 
-#### Fetching instructions:  
-A CPU can load instructions only from memory, so any programs to run must be stored there. General purpose computers run the program from r/w memory (RAM). Fetch instruction receives an instruction from ROM(Flash in this case) and uses load-store instructions to process data, load moves a word or byte from main memory to internal register within CPU and store moves the content of the register to main memory
 
-[[fetch-instruction]]
-.fetch instructions
-image::images/3_computerInstructions.jpg[]
+### What is an operating system?
+An operating systems acts as an intermediary between the applications in a computer and the hardware(see <<computer-stack>>, so its basically a driver). The OS is a program that manages a computers resources by offering services(cpu time, memory space via file storage, IO operations). An OS can be designed to be convenient or efficient but the *main goals  of an OS are:*
 
-### Computer system architecture
-#### Types of Data transfering
+* Abstract: hardware for portability and convinience.
+* Multiplexing: allow multiple applications to share hardware and cooperate while isolating programs to provide security.
 
-*Interrupt Driven I/O:*
-
-The IO device send data to the device controller, which examines the contents, transfers the data and informs the CPU via interrupt(one interrupt per byte) that the IO device requires operation and the OS responds with the required operation. This works fine for small amounts of data. But produce high overhead when used for bulk data movement such as disk IO.
-
-*DMA:*
-
-After setting buffers, pointers and counters for IO device, device controller transfers an entire block of data directly to or from its own buffer storage to memory without CPU intervention(only one interrupt per block).
-
-#### System processors	
-*Single-processor system:*
-
-On single processor systems, there is one main CPU capable of executing the full general purpose instruction set and user processes. However, almost all of them, have special-purpose processors to deal with specific devices or mainframes to move data rapidly. The special purpose processors run a limited instruction set, they are managed by the OS or via special hardware.
-
-*Multiprocessor/multicore/parallel systems:* 
-
-systems with 2 or more processor with shared bus and optionally clock, memory, peripherals. Advantages → increased throughput, economy due to sharing of electronic, reliability(ability to keep providing service proportional to the surviving hardware, also called“graceful degradation” or “fault tolerant”).
-
-[underline]#Asymmetric multiprocessing:# each processor is assigned a specific task. A Boss processor control the system and the other attends the boss or performs predefined task(IO for example).
-
-[underline]#Symmetric multiprocessing:#
-both processors performs all task within OS. Peer processors, could serve as redundancy or to divide workload(but [red]#shared resources must be carefully controlled#)
-
-*multicore systems:*
-
-more efficient and less power consumption by including multiple cores(processors) on a single chip.
-
-### OS structure
-One important feature is Multiprogramming, it increases CPU utilization by allowing multiple programs/jobs(code and data) which contain processes/tasks(program loaded into memory and executing) to be executed(similar to the batch of programs) at the same time. Whenever waiting for IO or something, another job executes. Basically a time-sharing system.
-
-The operating system is responsible for the management of:
+##### OS Responsibilities
 
 * Scheduling processes and threads on the CPUs. And allocating the pertinent resources.
 * Creating and deleting both user and system processes.
@@ -170,6 +153,127 @@ The operating system is responsible for the management of:
 * Keeping track of which parts of memory are currently being used and who is using them
 * Deciding which processes (or parts of processes) and data to move into and out of memory
 * Allocating and deallocating memory space as needed
+
+### OS Organization
+
+#### Abstracting pysical resources
+
+#### Kernel 
+XV6 OS takes the form of a kernel, a special program that provides services to running programs. A kernel has direct access to hardware components like RAM, CPU, DISK... and it implements abstractions to that HW via modules/programs like: File system(tree directory, file contents), memory allocation, IO manager... that provide common kernel services to different programs in user space as shown.
+
+image::9_kernel_services.jpg[]
+
+#### System calls
+Programs can execute kernel services via system calls, which execute in a similar way to <<interrupt-process>> because systems calls are a special type of exceptions. <<system-calls-xv6>>, are the main interface for users to request  the execution of kernel resources (privileged-code that affects physical resources of the computer).
+
+#### Process and Threads
+
+##### Analogy for processes and threads
+
+- A process as a house: A house is really a container, with certain attributes (such as the amount of floor space, the number of bedrooms, and so on). If you look at it that way, the house really doesn't actively do anything on its own — it's a passive object. 
+- The occupants as threads: The people living in the house are the active objects — they're the ones using the various rooms, watching TV, cooking, taking showers, and so on.
+. **Single threaded**: If you've ever lived on your own, you know that you can do anything you want in the house at any time, because there's nobody else in the house. 
+. **Multi threaded**: Things change dramatically when you add another person into the house. Let's say you get married, so now you have a spouse living there too. You can't just march into the washroom at any given point; you need to check first to make sure your spouse isn't in there. If you have two responsible adults living in a house, generally you can be reasonably lax about “security” — you know that the other adult will respect your space, won't try to set the kitchen on fire (deliberately!), and so on.
+Now, throw a few kids into the mix and suddenly things get a lot more interesting.
+
+##### Process
+Each **running program is called process** and it allocates some resources, such as: 
+
+* memory(for instructions, data, stack...) 
+* process identifier(pid), 
+* file descriptors
+* optionally inter-process communication(IPC) channels.
+
+.Process and thread
+image::8_proces_thread.jpg[]
+
+##### process states
+xv6 time-shares processes, this means that it transparently switches available CPU cores among the set of processes *ready* to execute processes. a process can be in either of the following states:
+
+* idle
+* ready: the process is ready to be queued for CPU execution
+* waiting: the process is not executing, it is waiting for a resource.
+
+##### process creation
+a process may create a new process using [green]#**fork**# system call. fork gives the new process exactly the same memory contents(instructions and data) as the calling process. After child is created, both process will execute the following instructions.
+```
+int pid = fork();
+```
+
+
+##### thread
+A thread is just the flow of execution or control within one process. A process has attributes like:
+
+* priority
+* scheduling algorithm
+* registers, CPU mask for multicore, signals and more
+
+so that multiple threads can be execute within one mediator-process. Basically a process changes executing thread according to scheduling policy.
+
+
+
+### OS Interfaces
+The job of an operating system is to share a computer among multiple programs and to provide a more useful set of services than the hardware alone supports. An OS makes abstractions of hardware so that programs do not concern about underlying hardware and at the same time facilitate the interaction between programs<-->OS.
+
+#### File descriptors for I/O
+A file descriptor(often refered as **file**) is a small integer representing a kernel-managed [green]#**object that a process may read from or write to**#. File descriptors are obtained by opening a file, directory or device. xv6 uses file descriptor as an index into a per-process table, so that every process has a private space of file descriptors starting at zero. By convention, a process:
+
+* reads from file descriptor 0(standard input)
+* writes to file descriptor 1(standard output)
+* writes error messages to file descriptor 2(std error)
+
+by default, these are the file descriptors for the console. The shell exploit this convention to implement I/O redirection and pipelines(eg: echo hello | wordCount).
+
+##### Reading and writing into a file
+Reading and writing is perform via system calls.
+
+* read(fd, buf, n): reads at most n bytes from the file descriptor fd, copies
+them into buf, and returns the number of bytes read.
+** If no data is available, a read on a pipe waits for either data to be written or for all file descriptors referring to the write end to be closed; in the latter case, read will return 0, just as if the end of a data file had been reached.
+* write(fd, buf, n):writes n bytes from buf to the file descriptor fd and returns the number of bytes written. 
+** each write picks up where the previous one left off
+
+#### Pipes
+A pipe is a small kernel buffer exposed to processes as a pair of file descriptors (reading-fd, writing-fd). Writing data to one end of the pipe makes that data available for reading from the other end of the pipe, this is the way inter-process communications happens.
+
+
+
+#### file system and links
+##### File system
+The directories form a tree, starting at a special directory called the root. A path like /a/b/c refers to the file or directory named c inside the directory named b inside the directory named a in the root directory /. 
+
+Paths that don’t begin with / are evaluated relative to the calling process’s current directory, which can
+be changed with the *chdir()* system call.
+
+There are system calls to create new files and directories: *mkdir()* creates a new directory, *open()*
+with the O_CREATE flag creates a new data file, and *mknod()* creates a new device file.
+
+##### Links
+A File-descriptor is also called *inode*, because it may have multiple names linking to the same object and some metadata. The *link()* system call creates another file-name referring to the same inode as an exist file.
+```
+//Reading from or writing to "a" is the same as reading from or writing to "b". This is known as *symbolic links* in UNIX systems.
+open("a", O_CREATE|O_WRONLY);
+link("a", "b");
+```
+
+
+Finally, since file-descriptors/inodes have more information than name and some data, *fstat()* system call retrieves information from the inode that a file-name refers to. It
+fills in a struct **stat**, defined in stat.h (kernel/stat.h) as:
+
+```
+#define T_DIR 1 // Directory
+#define T_FILE 2 // File
+#define T_DEVICE 3 // Device
+
+struct stat {
+    int dev;        // File system’s disk device
+    uint ino;       // Inode number(per-process table, id for the file descriptor)
+    short type;     // Type of file(directory, file, device).
+    short nlink;    // Number of links to file
+    uint64 size;    // Size of file in bytes
+};
+```
+
 
 ### Memory Management
 
@@ -198,35 +302,59 @@ image::images/7_virtualization.jpg[]
 
 
 
-## Operating system structures
-
-### OS Services
-
-
-
-TBD
-* file descriptors
-* function calls
-
-
-
-
-
-
-
-
-
-
 
 
 
 
 
 ## Terminology
+*GNU* is a collection of free software toola: GCC(GNU C compiler), glibc(GNU C Library), coreutils(GNU core utilities), GDB(GNU debugger), binutils(GNU binary utilities), GNU bash . GNU also has an operating system called Hurd but the most popular system "Linux" ONLY has GNU libraries with UNIX compatible tools which is often called GNU/Linux.
 
-**POSIX**, which stands for Portable Operating System Interface, represents a set of standards implemented primarily for UNIX-based operating systems.
+*UNIX*, is a family of operating systems that derive or behave like AT&T Unix(1969). Unix and Unix-like Operating Systems have been standarized to comply with POSIX standard. The main features of Unix that allowed it to create general-purpose reusable/modular programs that can be combined to create the first "scripting language" that allowed us to produce complex workflows are:
 
-*Linux*: Its Just the GNU project, with many UNIX-compatible tools (compilers, editors, utilities) + the kernel developed by Linus Torvalds(Linux)., resulting in GNU/Linux.
+- tree filesystem
+- file descriptors
+- pipes
+- shell syntax operations
+
+xv6 implements Unix-like interface.
+
+**POSIX**, which stands for Portable Operating System Interface, represents a set of standards for UNIX-based operating systems. For example, having input in file descriptor 0 and output in file descriptor 1.
+
+However, xv6 is NOT POSIX-compliant because it misses many system calls(like lseek and others) and also does not provide the notion of users or protecting one user from another(everything is root). Modern kernels, provide many more system calls, networking, windowing systems, user-level threads, drivers but our scope is to learn the basics so xv6 is enough and simpler than many.
+
+*Linux*: Its Just the GNU libraries, with many UNIX-compatible tools (compilers, editors, utilities) *+ the kernel* developed by Linus Torvalds(**Linux**)., resulting in GNU/Linux.
 
 *Licenses*: General Public License: This license was created with the goal of  forbid proprietary modifications or restriction of redistribution. Free Software Foundation, want to make sure that all versions of GNU and other softwares remain free. GPL requires that source code is distributed with any binaries and that t any changes made to the source code be released under the same GPL license.
 
+*Appendix A: system calls*
+[[system-calls-xv6]]
+.Available system calls in xv6
+[width="100%",options="header,footer"]
+|====================
+|System call| Description
+|int fork()| Create a process, by cloning the parents file descriptor table along with its memory. returns 0 to the child process and a positive value to the parent, which contains the pid of the child.
+|int exit(int status)| Terminate the current process; status reported to wait(). No return.
+|int wait(int *status)| Wait for a child to exit; exit status in *status; returns child PID.
+|int kill(int pid)| Terminate process PID. Returns 0, or -1 for error.
+|int getpid()| Return the current process’s PID.
+|int sleep(int n)| Pause for n clock ticks.
+|int exec(char *file, char *argv[])| replaces the calling process’s memory with a new memory image loaded from a file stored in the file system. The file must have a particular format, which specifies which part of the file holds instructions, which part is data, at which instruction to start, etc. Xv6 uses the
+ELF format; only returns if error.
+|char *sbrk(int n)| Grow process’s memory by n bytes. Returns start of new memory.
+|int open(char *file, int flags)| Open a file; flags indicate read/write; returns an fd (file descriptor).
+|int write(int fd, char *buf, int n)| Write up to n bytes from buf to file descriptor fd; returns the number of bytes written.
+|int read(int fd, char *buf, int n)| Read up to n bytes into buf; returns the number bytes readed; or 0 if end of file.
+|int close(int fd)| Release open file fd.
+|int dup(int fd)| Return a new file descriptor referring to the same file as fd.
+|int pipe(int p[2])| Create a small buffer on which Writing data to one end of the pipe makes that data available for reading from the other end of the pipe via file descriptors in p[0] and p[1]. If a process tries to read before something is written to the pipe, the process is suspended until something is written.
+|int chdir(char *dir)| Change the current directory.
+|int mkdir(char *dir)| Create a new directory.
+|int mknod(char *file, int, int)| Create a device file.
+|int fstat(int fd, struct stat *st)| Place info about an open file into *st.
+|int stat(char *file, struct stat *st)| Place info about a named file into *st.
+|int link(char *file1, char *file2)| Create another name (file2) for the file file1.
+|int unlink(char *file)| Remove a file.
+|====================
+
+Note that system calls if no otherwise stated, return 0 for no error and -1 for error.

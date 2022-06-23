@@ -3,6 +3,7 @@
 #include "user/user.h"
 #include "kernel/fs.h"
 
+int matchhere(char *regexp, char *text);
 char*
 fmtname(char *path)
 {
@@ -22,8 +23,46 @@ fmtname(char *path)
   return buf;
 }
 
+/* matchstar: search for c*regexp at beginning of text */
+int matchstar(int c, char *regexp, char *text)
+{
+    do {    /* a * matches zero or more instances */
+        if (matchhere(regexp, text))
+            return 1;
+    } while (*text != '\0' && (*text++ == c || c == '.'));
+    return 0;
+}
+
+/* matchhere: search for regexp at beginning of text */
+int matchhere(char *regexp, char *text)
+{
+    if (regexp[0] == '\0')
+        return 1;
+    if (regexp[1] == '*')
+        return matchstar(regexp[0], regexp+2, text);
+    if (regexp[0] == '$' && regexp[1] == '\0')
+        return *text == '\0';
+    if (*text!='\0' && (regexp[0]=='.' || regexp[0]==*text))
+        return matchhere(regexp+1, text+1);
+    return 0;
+}
+
+
+/* match: search for regexp anywhere in text */
+int match(char *regexp, char *text)
+{
+    if (regexp[0] == '^')
+        return matchhere(regexp+1, text);
+    do {    /* must look even if string is empty */
+        if (matchhere(regexp, text))
+            return 1;
+    } while (*text++ != '\0');
+    return 0;
+}
+
+
 void
-ls(char *path)
+ls(char *path, char *expression)
 {
   char buf[512], *p;
   int fd;
@@ -63,7 +102,14 @@ ls(char *path)
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
-      printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
+      if(strcmp(p, expression) == 0){
+        printf("found %s\n", p);
+      }
+
+      if(match(expression, p)){
+        printf("found reg: %s\n", p);
+      }
+
     }
     break;
   }
@@ -73,13 +119,6 @@ ls(char *path)
 int
 main(int argc, char *argv[])
 {
-  int i;
-
-  if(argc < 2){
-    ls(".");
-    exit(0);
-  }
-  for(i=1; i<argc; i++)
-    ls(argv[i]);
+  ls(argv[1], argv[2]);
   exit(0);
 }
