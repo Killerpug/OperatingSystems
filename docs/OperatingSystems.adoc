@@ -155,8 +155,12 @@ An operating systems acts as an intermediary between the applications in a compu
 * Allocating and deallocating memory space as needed
 
 ### OS Organization
+We will see how OS fulfill process requirements for: multiplexing, isolation and interaction.
 
-#### Abstracting pysical resources
+
+
+#### Abstracting physical resources
+
 
 #### Kernel 
 XV6 OS takes the form of a kernel, a special program that provides services to running programs. A kernel has direct access to hardware components like RAM, CPU, DISK... and it implements abstractions to that HW via modules/programs like: File system(tree directory, file contents), memory allocation, IO manager... that provide common kernel services to different programs in user space as shown.

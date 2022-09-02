@@ -1,0 +1,108 @@
+make.exe --dry-run --always-make --keep-going --print-directory
+-i was unexpected at this time.
+
+The system cannot find the path specified.
+
+The system cannot find the path specified.
+
+make.exe: Entering directory 'c:/Users/etapi/OneDrive/Pictures/SelfLearning/PersonalProjects/Github/Operating_Systems/os_xv6'
+gcc    -c -o kernel/entry.o kernel/entry.S
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/start.o kernel/start.c
+ 
+make.exe: *** No rule to make target '/usr/lib/gcc-cross/riscv64-linux-gnu/9/include/stdarg.h', needed by 'kernel/console.o'.
+
+The system cannot find the path specified.
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/uart.o kernel/uart.c
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/kalloc.o kernel/kalloc.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/spinlock.o kernel/spinlock.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/string.o kernel/string.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/main.o kernel/main.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/vm.o kernel/vm.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/proc.o kernel/proc.c
+ 
+gcc    -c -o kernel/swtch.o kernel/swtch.S
+ 
+gcc    -c -o kernel/trampoline.o kernel/trampoline.S
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/trap.o kernel/trap.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/syscall.o kernel/syscall.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/sysproc.o kernel/sysproc.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/bio.o kernel/bio.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/fs.o kernel/fs.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/log.o kernel/log.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/sleeplock.o kernel/sleeplock.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/file.o kernel/file.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/pipe.o kernel/pipe.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/exec.o kernel/exec.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/sysfile.o kernel/sysfile.c
+gcc    -c -o kernel/kernelvec.o kernel/kernelvec.S
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/plic.o kernel/plic.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/virtio_disk.o kernel/virtio_disk.c
+ 
+The system cannot find the path specified.
+
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.  -march=rv64g -nostdinc -I. -Ikernel -c user/initcode.S -o user/initcode.o
+ld -z max-page-size=4096 -N -e start -Ttext 0 -o user/initcode.out user/initcode.o
+ 
+objcopy -S -O binary user/initcode.out user/initcode
+objdump -S user/initcode.o > user/initcode.asm
+make.exe: Leaving directory 'c:/Users/etapi/OneDrive/Pictures/SelfLearning/PersonalProjects/Github/Operating_Systems/os_xv6'
+ 
