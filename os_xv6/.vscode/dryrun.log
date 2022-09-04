@@ -15,9 +15,11 @@ gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany
 make.exe: *** No rule to make target '/usr/lib/gcc-cross/riscv64-linux-gnu/9/include/stdarg.h', needed by 'kernel/console.o'.
 
 The system cannot find the path specified.
-The system cannot find the path specified.
 
 gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/uart.o kernel/uart.c
+ 
+The system cannot find the path specified.
+
 gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/kalloc.o kernel/kalloc.c
  
 The system cannot find the path specified.
@@ -41,7 +43,6 @@ The system cannot find the path specified.
 gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/proc.o kernel/proc.c
  
 gcc    -c -o kernel/swtch.o kernel/swtch.S
- 
 gcc    -c -o kernel/trampoline.o kernel/trampoline.S
  
 The system cannot find the path specified.
@@ -69,11 +70,9 @@ The system cannot find the path specified.
 gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/log.o kernel/log.c
  
 The system cannot find the path specified.
-
-gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/sleeplock.o kernel/sleeplock.c
- 
 The system cannot find the path specified.
 
+gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/sleeplock.o kernel/sleeplock.c
 gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/file.o kernel/file.c
  
 The system cannot find the path specified.
@@ -87,6 +86,7 @@ gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany
 The system cannot find the path specified.
 
 gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.    -c -o kernel/sysfile.o kernel/sysfile.c
+ 
 gcc    -c -o kernel/kernelvec.o kernel/kernelvec.S
  
 The system cannot find the path specified.
@@ -101,7 +101,6 @@ The system cannot find the path specified.
 
 gcc -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb gdwarf-2 -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I.  -march=rv64g -nostdinc -I. -Ikernel -c user/initcode.S -o user/initcode.o
 ld -z max-page-size=4096 -N -e start -Ttext 0 -o user/initcode.out user/initcode.o
- 
 objcopy -S -O binary user/initcode.out user/initcode
 objdump -S user/initcode.o > user/initcode.asm
 make.exe: Leaving directory 'c:/Users/etapi/OneDrive/Pictures/SelfLearning/PersonalProjects/Github/Operating_Systems/os_xv6'

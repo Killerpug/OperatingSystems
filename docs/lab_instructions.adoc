@@ -14,19 +14,19 @@ Compile and run xv6
 For this class you'll need the RISC-V versions of a couple different tools: QEMU 5.1+, GDB 8.3+, GCC, and Binutils. You can install them on Ubuntu 20.04 by:
 
 [source,bash]
-----
+....
 $ sudo apt-get update && sudo apt-get upgrade
 $ sudo apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu
-----
+....
 From Windows, you can access all of your WSL files under the "\\wsl$\" directory. For instance, the home directory for an Ubuntu 20.04 installation should be at "\\wsl$\Ubuntu-20.04\home\<username>\". 
 
 ### Compile and run QEMU
 To test your installation, you should be able to compile and run xv6.
 [source,bash]
----
+....
 # in the xv6 directory. dont forget to clone xv6 OS.
 $ make qemu
----
+....
 
 NOTE: to quit qemu type Ctrl-a x
 
@@ -42,8 +42,8 @@ Implement the UNIX program sleep for xv6; your sleep should pause for a user-spe
 Following the computer stack we can see in the following diagram, the overall structure for system calls(the example is the sleep program):
 
 .system calls in xv6
-[uml,file="system_calls_xv6.png"]
---
+[plantuml,file="system_calls_xv6.png"]
+....
 
 node "xv6 system calls" {
 node "User space"{
@@ -53,12 +53,12 @@ node "syscall interface"{
     [//usys.s:\n On startup, system maps shell "sleep" calls to kernel service "sys_sleep"] as usys.s
 }
 node "Kernel space"{
-    [**sys_sleep**\n Kernel retrieves "n_ticks" from process info and \n schedules SLEEPING state until (n_ticks - trap_ticks) == 0"] as sys_sleep
+    [**sys_sleep**\n Kernel retrieves "n_ticks" from process info and \n schedules SLEEPING state until (system_ticks < n_ticks)] as sys_sleep
     [**trap**\n calls hardware timer and increases ticks] as trap
     [**process information**\n process->trpframe->a0: n_ticks] as process_info
 }
 node "Hardware"{
-    [**process table**(in memory)\n processes allocate uc memory at startup.\n Each process has: \n state,\n pid,\n stack,\n size,\n user_table,\n **trapframe**:handles code during traps \n and saves user registers like arguments,\n context: structure for context switches ] as proc
+    [**process table**(in memory)\n processes allocate uc memory at startup.\n Each process has: \n state,\n pid,\n stack,\n size,\n user_table,\n **trapframe**:handles code during traps \n and saves user registers like arguments,\n context: structure for context switches. ] as proc
     [**timer tick**\n hardware is programmed to provide 1/10th of a second ticks] as tick
 }
 
@@ -72,7 +72,7 @@ node "Hardware"{
 [sys_sleep] -d-> [trap]  
 
 }
---
+....
 
 #### arguments
 command-line arguments are passed from the shell to the kernel using the process memory table. We retrieve the argument from process memory using argint(int an, int *ip) funciton, where an is argument_number and ip is a reference to the stored variable[type uint64].
@@ -92,8 +92,8 @@ Write a program that uses UNIX system calls to ping-pong **a byte between two pr
 When we use *fork* in any process, file descriptors remain open across child process and also parent process. If we call fork after creating a pipe, then the parent and child can communicate via the pipe.
 
 .Inter Process Communication with pipes
-[uml,file="IPC_pipes.png"]
---
+[plantuml, target=IPC_pipes, format=png]
+....
 node "parent process" {
 [fd0, read ] as fd0parent
 [fd1, write] as fd1parent
@@ -113,7 +113,7 @@ node "kernel" {
 [fd1child] -d-> [pipe2]
 [pipe1] -u-> [fd0child]
 [pipe2] -u-> [fd0parent]
---
+....
 
 ### Sieve primes
 Write a concurrent version of prime sieve using pipes.  For each prime number, you will arrange to create one process that reads from its left neighbor over a pipe, drops all numbers that are divisible by that number, and writes to its right neighbor over another pipe.

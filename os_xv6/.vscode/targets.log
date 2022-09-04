@@ -13,7 +13,7 @@ The system cannot find the path specified.
 The system cannot find the path specified.
 
 
-# Make data base, printed on Thu Sep 01 20:37:17 2022
+# Make data base, printed on Thu Sep 01 22:04:05 2022
 
 # Variables
 
@@ -31,7 +31,8 @@ QEMU = qemu-system-riscv64
 MAKEFLAGS = Rrqp
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
-# automatic
+# automat 
+ic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
 HOMEDRIVE = C:
@@ -62,8 +63,7 @@ GDBPORT = $(shell expr `id -u` % 5000 + 25000)
 # environment
 PATHEXT = .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
 # makefile (from 'user/wc.d', line 1)
-MAKEFILE_LIST :=  Makefile kernel/start.d kernel/plic.d kernel/kalloc.d kernel/vm.d kernel/file.d kernel/console.d kernel/spinlock.d kernel/main.d kernel/sleeplock.d kernel/bio.d kernel/pipe.d kernel/log.d kernel/sysfile.d kernel/uart.d kernel/trap.d kernel/printf.d kernel/syscall.d kernel/exec.d kernel/string.d kernel/sysproc.d kernel/fs.d kernel/virtio_disk.d kernel/proc.d user/rm.d u 
-ser/zombie.d user/cat.d user/find.d user/stressfs.d user/ln.d user/initcode.d user/echo.d user/usertests.d user/grep.d user/forktest.d user/umalloc.d user/mkdir.d user/ls.d user/pingpong.d user/kill.d user/usys.d user/grind.d user/sleep.d user/primes.d user/init.d user/printf.d user/ulib.d user/sh.d user/wc.d
+MAKEFILE_LIST :=  Makefile kernel/start.d kernel/plic.d kernel/kalloc.d kernel/vm.d kernel/file.d kernel/console.d kernel/spinlock.d kernel/main.d kernel/sleeplock.d kernel/bio.d kernel/pipe.d kernel/log.d kernel/sysfile.d kernel/uart.d kernel/trap.d kernel/printf.d kernel/syscall.d kernel/exec.d kernel/string.d kernel/sysproc.d kernel/fs.d kernel/virtio_disk.d kernel/proc.d user/rm.d user/zombie.d user/cat.d user/find.d user/stressfs.d user/ln.d user/initcode.d user/echo.d user/usertests.d user/grep.d user/forktest.d user/umalloc.d user/mkdir.d user/ls.d user/pingpong.d user/kill.d user/usys.d user/grind.d user/sleep.d user/primes.d user/init.d user/printf.d user/ulib.d user/sh.d user/wc.d
 # environment
 TMP = C:\Users\etapi\AppData\Local\Temp
 # makefile (from 'Makefile', line 54)
@@ -105,7 +105,7 @@ ULIB = $U/ulib.o $U/usys.o $U/printf.o $U/umalloc.o
 # automatic
 %F = $(notdir $%)
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_23996_FPXCFPNFYUQXGIYI
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_15872_ITPARCSIFNYIEKNA
 # environment
 COMPUTERNAME = DESKTOP-2TGEBTR
 # environment
@@ -121,7 +121,7 @@ PUBLIC = C:\Users\Public
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
-VSCODE_CODE_CACHE_PATH = C:\Users\etapi\AppData\Roaming\Code\CachedData\e4503b30fc78200f846c62cf8091b76ff5547662
+VSCODE_CODE_CACHE_PATH = C:\Users\etapi\AppData\Roaming\Code\CachedData\784b0177c56c607789f9638da7b6bf3230d47a8c
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
@@ -137,7 +137,6 @@ USERDOMAIN = DESKTOP-2TGEBTR
 # environment
 MAKELEVEL := 0
 # default
- 
 MAKE = $(MAKE_COMMAND)
 # default
 MAKECMDGOALS := all
@@ -156,7 +155,8 @@ PROGRAMFILES(X86) = C:\Program Files (x86)
 # environment
 LOCALAPPDATA = C:\Users\etapi\AppData\Local
 # environment
-PSMODULEPATH = C:\Program Files\WindowsPowerShell\Modules;C:\WINDOWS\system32\WindowsPowerShell\v1.0\Modules
+PSMODULEPATH = C:\Program Files\WindowsPowerShell\Modules;C:\WINDOWS\system32\Wi 
+ndowsPowerShell\v1.0\Modules
 # default
 MAKE_COMMAND := make.exe
 # environment
@@ -170,7 +170,7 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 158 Stepping 10, GenuineIntel
 # environment
 OS = Windows_NT
 # environment
-VSCODE_IPC_HOOK = \\.\pipe\9568594b0100de2bfeae99b5d3bebb85-1.70.2-main-sock
+VSCODE_IPC_HOOK = \\.\pipe\9568594b0100de2bfeae99b5d3bebb85-1.71.0-main-sock
 # environment
 HOMEPATH = \Users\etapi
 # environment
@@ -226,13 +226,12 @@ LANG = C
 # environment
 PROCESSOR_LEVEL = 6
 # environment
-VSCODE_PID = 23996
+VSCODE_PID = 15872
 # environment
 USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 # variable set hash-table stats:
 # Load=105/1024=10%, Rehash=0, Collisions=21/354=6%
 
- 
 # Pattern-specific Variable Values
 
 # No pattern-specific variable values.
@@ -243,9 +242,10 @@ USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 # user (key c:/Users/etapi/OneDrive/Pictures/SelfLearning/PersonalProjects/Github/Operating_Systems/os_xv6/user, mtime 1655263408): 143 files, no impossibilities.
 # C:\Users\etapi\AppData\Local\GitHubDesktop\bin (key C:/Users/etapi/AppData/Local/GitHubDesktop/bin, mtime 1640633082): 4 files, no impossibilities.
 # kernel (key c:/Users/etapi/OneDrive/Pictures/SelfLearning/PersonalProjects/Github/Operating_Systems/os_xv6/kernel, mtime 1647206041): 101 files, no impossibilities.
-# C:\Users\etapi\AppData\Local\Programs\Microsoft VS Code\bin (key C:/Users/etapi/AppData/Local/Programs/Microsoft VS Code/bin, mtime 1661621391): 4 files, no impossibilities.
+# C:\Users\etapi\AppData\Local\Programs\Microsoft VS Code\bin (key C:/Users/etapi/AppData/Local/Programs/Microsoft VS Code/bin, mtime 1662082809): 4 files, no impossibilities.
 # C:\WINDOWS\System32\WindowsPowerShell\v1.0\ (key C:/WINDOWS/System32/WindowsPowerShell/v1.0/, mtime 1641692386): 32 files, no impossibilities.
-# . (key c:/Users/etapi/OneDrive/Pictures/SelfLearning/PersonalProjects/Github/Operating_Systems/os_xv6, mtime 1657029531): 16 files, no impossibilities.
+# . (key c:/Users/etapi/OneDrive/Pictures/SelfLearning/PersonalProj 
+ects/Github/Operating_Systems/os_xv6, mtime 1657029531): 16 files, no impossibilities.
 # C:\Users\etapi\.dotnet\tools: could not be stat'd.
 # C:\Program Files (x86)\Common Files\Oracle\Java\javapath (key C:/Program Files (x86)/Common Files/Oracle/Java/javapath, mtime 1661647537): 5 files, no impossibilities.
 # C:\Program Files\Git\cmd (key C:/Program Files/Git/cmd, mtime 1640716968): 8 files, no impossibilities.
@@ -257,8 +257,7 @@ USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 # C:\Program Files\Docker\Docker\resources\bin (key C:/Program Files/Docker/Docker/resources/bin, mtime 1657497733): 13 files, no impossibilities.
 # C:\WINDOWS\System32\Wbem (key C:/WINDOWS/System32/Wbem, mtime 1660353743): 172 files, no impossibilities.
 # C:\Users\etapi\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts (key C:/Users/etapi/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0/LocalCache/local-packages/Python310/Scripts, mtime 1661636922): 13 files, no impossibilities.
-# C:\Program Files\Java\jre1.8.0_341\bin (key C:/Program Files/Java/jre1.8.0_341/bin, m 
-time 1661647535): 130 files, no impossibilities.
+# C:\Program Files\Java\jre1.8.0_341\bin (key C:/Program Files/Java/jre1.8.0_341/bin, mtime 1661647535): 130 files, no impossibilities.
 # C:\Program Files\dotnet\ (key C:/Program Files/dotnet/, mtime 1660507397): 12 files, no impossibilities.
 # C:\WINDOWS\system32 (key C:/WINDOWS/system32, mtime 1661732196): 2958 files, no impossibilities.
 # C:\Program Files\Graphviz\bin (key C:/Program Files/Graphviz/bin, mtime 1640485429): 60 files, no impossibilities.
@@ -408,7 +407,8 @@ all:
 #  Precious file (prerequisite of .PRECIOUS).
 #  Implicit rule search has not been done.
 #  Modification time never checked.
-#  File has not been updated.
+#  File has not be 
+en updated.
 
 user/sh.o: user/sh.c kernel/types.h user/user.h kernel/fcntl.h
 #  Implicit rule search has not been done.
@@ -429,8 +429,7 @@ kernel/spinlock.h:
 
 # Not a target:
 kernel/console.d:
-#  Impli 
-cit rule search has been done.
+#  Implicit rule search has been done.
 #  Last modified 2021-12-28 01:12:36
 #  File has been updated.
 #  Successfully updated.
@@ -507,7 +506,8 @@ kernel/bio.d:
 kernel/start.c:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
-#  File has not been updated.
+#  File has not  
+been updated.
 
 # Not a target:
 README:
@@ -523,8 +523,7 @@ kernel/syscall.o: kernel/syscall.c kernel/types.h kernel/param.h kernel/memlayou
 # Not a target:
 kernel/memlayout.h:
 #  Implicit rule search has not been done.
-#  Modificat 
-ion time never checked.
+#  Modification time never checked.
 #  File has not been updated.
 
 user/rm.o: user/rm.c kernel/types.h kernel/stat.h user/user.h
@@ -680,8 +679,7 @@ user/umalloc.d:
 
 # Not a target:
 kernel/buf.h:
-#  Implicit rule search has not been do 
-ne.
+#  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 
@@ -703,7 +701,8 @@ kernel/proc.d:
 kernel/main.c:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
-#  File has not been updated.
+#  File h 
+as not been updated.
 
 # Not a target:
 user/grind.c:
@@ -765,8 +764,7 @@ user/find.d:
 # Not a target:
 user/_rm:
 #  Implicit rule search has not been done.
-#  Modifi 
-cation time never checked.
+#  Modification time never checked.
 #  File has not been updated.
 
 # Not a target:
@@ -858,7 +856,8 @@ user/sh.c:
 
 # Not a target:
 kernel/trap.c:
-#  Implicit rule search has not been done.
+#  Implicit rule search has not be 
+en done.
 #  Modification time never checked.
 #  File has not been updated.
 
@@ -881,7 +880,6 @@ kernel/trap.d:
 #  File has been updated.
 #  Successfully updated.
 
- 
 # Not a target:
 kernel/plic.c:
 #  Implicit rule search has not been done.
@@ -1078,8 +1076,7 @@ kernel/proc.o: kernel/proc.c kernel/types.h kernel/param.h kernel/memlayout.h ke
 # Not a target:
 kernel/pipe.d:
 #  Implicit rule search has been done.
-#  Last modified 2021-12-28 01:12:3 
-6
+#  Last modified 2021-12-28 01:12:36
 #  File has been updated.
 #  Successfully updated.
 
@@ -1100,7 +1097,8 @@ kernel/string.o: kernel/string.c kernel/types.h
 #  Modification time never checked.
 #  File has not been updated.
 
-# Not a target:
+# Not a targ 
+et:
 user/_find:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -1187,8 +1185,7 @@ kernel/sleeplock.c:
 # Not a target:
 kernel/main.d:
 #  Implicit rule search has been done.
-#  Last modified 2021-12-28 01:12: 
-36
+#  Last modified 2021-12-28 01:12:36
 #  File has been updated.
 #  Successfully updated.
 
@@ -1254,7 +1251,8 @@ kernel/defs.h:
 #  Modification time never checked.
 #  File has not been updated.
 
-user/usertests.o: user/usertests.c kernel/param.h kernel/types.h kernel/stat.h user/user.h kernel/fs.h kernel/fcntl.h kernel/syscall.h kernel/memlayout.h kernel/riscv.h
+user/usertests.o: user/usertests.c kernel/param.h kernel/types.h kernel/stat.h user/user.h kernel/fs.h kernel/fcntl.h kernel/syscall.h kernel/me 
+mlayout.h kernel/riscv.h
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -1275,8 +1273,7 @@ kernel/date.h:
 # Not a target:
 user/_usertests:
 #  Implicit rule search has not been done.
-# 
-  Modification time never checked.
+#  Modification time never checked.
 #  File has not been updated.
 
 # Not a target:
@@ -1504,8 +1501,7 @@ kernel/pipe.o: kernel/pipe.c kernel/types.h kernel/riscv.h kernel/defs.h kernel/
 # Not a target:
 kernel/file.c:
 #  Implicit rule search has not been done.
-#  Modification  
-time never checked.
+#  Modification time never checked.
 #  File has not been updated.
 
 user/grep.o: user/grep.c kernel/types.h kernel/stat.h user/user.h
@@ -1524,7 +1520,8 @@ user/forktest.d:
 #  Implicit rule search has been done.
 #  Last modified 2021-12-28 01:12:37
 #  File has been updated.
-#  Successfully updated.
+#  Successfu 
+lly updated.
 
 # Not a target:
 kernel/spinlock.c:
@@ -1580,14 +1577,13 @@ kernel/string.c:
 # strcache buffers: 8 (7) / strings = 4146 / storage = 61427 B / avg = 14 B
 # current buf: size = 8174 B / used = 4264 B / count = 405 / avg = 10 B
 # other used: total = 53253 B / count = 3741 / avg = 14 B
-# other free: total = 55 B / max = 12  
-make.exe: *** No rule to make target 'all'.  Stop.
-
-B / min = 1 B / avg = 7 B
+# other free: total = 55 B / max = 12 B / min = 1 B / avg = 7 B
 
 # strcache performance: lookups = 4730 / hit rate = 12%
 # hash-table stats:
 # Load=4146/8192=51%, Rehash=0, Collisions=2181/4730=46%
-# Finished Make data base on Thu Sep 01 20:37:17 2022
+# Finished Make data base on Thu Sep 01 22:04:05 2022
 
  
+make.exe: *** No rule to make target 'all'.  Stop.
+
