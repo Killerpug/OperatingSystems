@@ -7,7 +7,7 @@ make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --quest
 # There is NO WARRANTY, to the extent permitted by law.
  
 
-# Make data base, printed on Sat Sep 03 14:52:58 2022
+# Make data base, printed on Sun Sep 04 12:10:22 2022
 
 # Variables
 
@@ -74,7 +74,7 @@ ELECTRON_RUN_AS_NODE = 1
 # automatic
 %F = $(notdir $%)
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_24948_JNRELEOHBRGIIJMR
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_26468_RWOQIFJDIHZNJPTP
 # environment
 COMPUTERNAME = DESKTOP-2TGEBTR
 # environment
@@ -182,7 +182,7 @@ LANG = C
 # environment
 PROCESSOR_LEVEL = 6
 # environment
-VSCODE_PID = 24948
+VSCODE_PID = 26468
 # environment
 USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 # variable set hash-table stats:
@@ -281,7 +281,7 @@ GNUmakefile:
 # strcache performance: lookups = 3837 / hit rate = 3%
 # hash-table stats:
 # Load=3706/8192=45%, Rehash=0, Collisions=1411/3837=37%
-# Finished Make data base on Sat Sep 03 14:52:58 2022
+# Finished Make data base on Sun Sep 04 12:10:22 2022
 
  
 make.exe: *** No rule to make target 'all'.  Stop.

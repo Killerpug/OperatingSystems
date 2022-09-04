@@ -4,7 +4,7 @@
 :lang: en
 :toc: left
 :numbered: 
-:toclevels: 3  
+:toclevels: 4  
 :imagesdir: images
 :source-language: C
 
@@ -126,6 +126,7 @@ image::4_overviewInterrupt.jpg[]
 
 In parallel, save(push) the address of the interrupted instruction in the Program Counter. Also, we store status register(xPSR), LR and registers R0, R1, R2, R3 and R12.
 
+.IRQ context switch
 image::5_IRQsavestate.jpg[]
 
 2) Then, to handle the exception or interruption:
@@ -171,16 +172,65 @@ Another example is the file descriptors systemcalls, they allow OS to decide whe
 #### Kernel 
 XV6 OS takes the form of a kernel, a special program that provides services to running programs. A kernel has direct access to hardware components like RAM, CPU, DISK... and it implements abstractions to that HW via modules/programs like: File system(tree directory, file contents), memory allocation, IO manager... that provide common kernel services to different programs in user space as shown.
 
+.Kernel services
 image::9_kernel_services.jpg[]
 
 ##### Kernel design
 A key design question is "what part of the OS should run in supervisor mode". There are 2 main posibilities:
 
 * Monolithic kernel: The entire OS resides in the kernel, so that all system calls run in supervisor mode.
-.. pros: doesnt waste time on deciding which parts of OS need full HW privilege. Easier to cooperate between diferent parts(buffer and file system).
+.. pros: doesn't waste time on deciding which parts of OS need full HW privilege. Easier to cooperate between different parts(E.G. buffer and file system). Faster performance.
 .. cons: Interfaces between parts of the OS are often complex. Errors make entire kernel to fail.
 
-* Microkernel:  //TODO, SECTION 2.3 XV6
+* Microkernel: Minimizes the amount of OS code that runs in supervisor mode. For example, the File system can run as a user-level process and apps that require file system can communicate via inter-process messages.
+.. pros: Relative simple organization(kernel consist of few low-level function for starting application, sending messages and accessing hardware). Separation of concerns. Most of OS resides in user-level servers. More reliable. 
+.. cons: time overhead to pass messages and waiting for response.
+
+* Hibrid: the two methods above can be combined to deal with the tradeoffs of speed vs simplicity/reliability
+
+.Monolithic Kernel vs QNX Microkernel
+image::OSO_kerneldesign_MonolithicVsMicrokernel.png[]
+
+##### How is XV6-Kernel Organized: booting up XV6
+
+.kernel source files
+[width="100%",options="header,footer"]
+|====================
+|File |Description
+|bio.c |Disk block cache for the file system.
+|console.c |Connect to the user keyboard and screen.
+|entry.S |Very first boot instructions.
+|exec.c |exec() system call.
+|file.c |File descriptor support.
+|fs.c |File system.
+|kalloc.c |Physical page allocator.
+|kernelvec.S |Handle traps from kernel, and timer interrupts.
+|log.c |File system logging and crash recovery.
+|main.c |Control initialization of other modules during boot.
+|pipe.c |Pipes.
+|plic.c |RISC-V interrupt controller.
+|printf.c |Formatted output to the console.
+|proc.c |Processes and scheduling.
+|sleeplock.c |Locks that yield the CPU.
+|spinlock.c |Locks that don’t yield the CPU.
+|start.c |Early machine-mode boot code.
+|string.c |C string and byte-array library.
+|swtch.S |Thread switching.
+|syscall.c |Dispatch system calls to handling function.
+|sysfile.c |File-related system calls.
+|sysproc.c |Process-related system calls.
+|trampoline.S |Assembly code to switch between user and kernel.
+|trap.c |C code to handle and return from traps and interrupts.
+|uart.c |Serial-port console device driver.
+|virtio_disk.c |Disk device driver.
+|vm.c |Manage page tables and address spaces.
+|====================
+
+When the RISC-V computer powers on, it starts in a bootloader stored in ROM, the bootloader loads XV6 kernel into memory(0x8000_0000) and in machine mode(configuration mode) XV6 starts at _entry. RISC-V starts with paging hardware disabled(virtual address maps directly to physical address).
+
+Instructions at _entry set up a stack for Early-machine boot code(in file start.c) and the stackpointer to stack0+4096(RISC-V grows down). On start, machine performs machine-mode only configurations(E.g. timer interrupts, pass responsabilities(memory access, interrupts and exceptions) to kernel mode) and switches to kernel mode by calling *mret*(This instruction is most often used to return from a previous call in supervisor mode to machine mode. Since start isn’t returning from such a call, instead we sets things up as if there had been one: setting the previous privilege mode to supervisor in the register mstatus, and return address to main by writing main’s address into the register *mepc*).
+
+Finally on Main(), we initialize several devices, subsystems, the first process by calling userinit(in proc.c, which executes the *exec* system call) and creates a new console device.
 
 #### System calls
 Programs can execute kernel services via system calls, which execute in a similar way to <<interrupt-process>> because systems calls are a special type of exceptions. <<system-calls-xv6>>, are the main interface for users to request  the execution of kernel resources (privileged-code that affects physical resources of the computer).
@@ -240,39 +290,54 @@ syscall(void)
 . **Multi threaded**: Things change dramatically when you add another person into the house. Let's say you get married, so now you have a spouse living there too. You can't just march into the washroom at any given point; you need to check first to make sure your spouse isn't in there. If you have two responsible adults living in a house, generally you can be reasonably lax about “security” — you know that the other adult will respect your space, won't try to set the kitchen on fire (deliberately!), and so on.
 Now, throw a few kids into the mix and suddenly things get a lot more interesting.
 
-##### Process
-Each **running program is called process** and it allocates some resources, such as: 
-
-* memory(for instructions, data, stack...) 
-* process identifier(pid), 
-* file descriptors
-* optionally inter-process communication(IPC) channels.
-
 .Process and thread
 image::8_proces_thread.jpg[]
 
-##### process states
+##### Process
+Each **running program is called process**, a process contains all the elements required to run and keep track of a program. A process allocates the following elements in [green]#*proc*# structure: 
+
+* A user and a kernel stack. Only one stack is actively used at a time and it depends on the instructions in execution(*ecall* raises privileges to kernel instructions and *sret* lowers privilege level to resume executing user instructions).
+* heap
+* code(user text and data)
+* process identifier(pid), 
+* file descriptors
+* page table, maps virtual addresses to physical addresses
+* Trampoline and trapframes, used to transition in and out of the kernel. Trampoline is the code for transition and trapframe is a structure filled by trampoline to save/restore the state of the process.
+* optionally inter-process communication(IPC) channels.
+
+The process implementation includes user/kernel mode flag, addresss space(own memory), and time slicing of threads mechanisms to create strong isolation. Isolation is achieved by creating the illusion to a program that is has its own private machine, a process only has access to a "private" address space which other processes cannot read or write.
+
+.Layout of a process's virtual address space
+image::OSO_proccessAndThread_ProcessVirtualAddressSpace.png[]
+
+XV6 uses page tables(implemented in HW) to give each process its own address space. RISC-V page table translates/maps a virtual address(in range  of 0 - 2^38 since HW only uses 38 bits when looking up virtual adresses in page tables) to a physical address. XV6 maintains separate page table for each process. 
+
+At the top of the address space, XV6 reserves a page for trampoline(code to transition in and out the kernel) and a page for trapframe(structure with status-data of the process, filled by trampoline to save/restore the state of the process).
+
+###### process states
 xv6 time-shares processes, this means that it transparently switches available CPU cores among the set of processes *ready* to execute processes. a process can be in either of the following states:
 
 * idle
 * ready: the process is ready to be queued for CPU execution
 * waiting: the process is not executing, it is waiting for a resource.
 
-##### process creation
+###### process creation
 a process may create a new process using [green]#**fork**# system call. fork gives the new process exactly the same memory contents(instructions and data) as the calling process. After child is created, both process will execute the following instructions.
 ```
 int pid = fork();
 ```
 
 
-##### thread
-A thread is just the flow of execution or control within one process. A process has attributes like:
+##### Thread
+A thread is just the flow of execution or control within one process. A process thread has attributes like:
 
 * priority
 * scheduling algorithm
 * registers, CPU mask for multicore, signals and more
 
-so that multiple threads can be execute within one mediator-process. Basically a process changes executing thread according to scheduling policy.
+so that multiple threads can be execute within one mediator-process. Basically a process changes executing thread according to scheduling policy. Threads create the illusion that the process posess its own CPU.
+
+Switching between processes happen in a similar fashion, kernel suspends currently running thread and resumes another process's thread. The thread also has a stack(local variables, function call return adress) and state(suspended/running status).
 
 
 
