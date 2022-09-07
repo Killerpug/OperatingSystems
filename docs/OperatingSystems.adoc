@@ -168,6 +168,7 @@ Resource abstraction into services is typical to enable strong isolation  betwee
 
 Another example is the file descriptors systemcalls, they allow OS to decide where to place a pipe/file in memory and keeps away the app from interacting directly with memory while providing status signals(end-of-file, open file...).  The system-call interface is designed to provide convenience and strong isolation. 
 
+NOTE: *Why abstracting?* The operating system must assume that a process's user-level code will do its best to wreck the kernel or other processes. User code may try to dereference pointers outside its allowed address space; it may attempt to execute any RISC-V instructions, even those not intended for user code; it may try to read and write any RISC-V control register; it may try to directly access device hardware; and it may pass clever values to system calls in an attempt to trick the kernel into crashing or doing something stupid. The *kernel's goal is to restrict each user processes so that all it can do is read/write/execute its own user memory, use the 32 general-purpose RISC-V registers, and only affect the kernel and other processes in the ways that system calls are intended to allow it*. The kernel must prevent any other actions.
 
 #### Kernel 
 XV6 OS takes the form of a kernel, a special program that provides services to running programs. A kernel has direct access to hardware components like RAM, CPU, DISK... and it implements abstractions to that HW via modules/programs like: File system(tree directory, file contents), memory allocation, IO manager... that provide common kernel services to different programs in user space as shown.
@@ -367,7 +368,7 @@ A pipe is a small kernel buffer exposed to processes as a pair of file descripto
 
 
 
-#### file system and links
+#### File system and links
 ##### File system
 The directories form a tree, starting at a special directory called the root. A path like /a/b/c refers to the file or directory named c inside the directory named b inside the directory named a in the root directory /. 
 

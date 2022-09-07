@@ -140,3 +140,28 @@ However, Hoare addressed both issues with a single language primitive: **synchro
 
 ### find
 Write a simple version of the UNIX find program: find all the files in a directory tree with a specific name. Your solution should be in the file user/find.c
+
+
+
+## Running GDB
+Console1> make qemu-gdb
+console2> riscv64-unknown-elf-gdb user/executableOfInterest
+console2> target remote localhost:26000
+
+//TODO: check how to default into _entry program
+//correct path in gdbini
+
+
+## Lab System calls
+Keep in mind that the code for system calls is kept at:
+
+* The user-space code for systems calls is in user/user.h and user/usys.pl.
+* The kernel-space code is kernel/syscall.h, kernel/syscall.c.
+* The process-related code is kernel/proc.h and kernel/proc.c. 
+
+### Add a program
+. Add $U/_programName to UPROGS in Makefile 
+
+### System call tracing
+* Goal: Add a system call tracing feature. Create a new trace system call that will control tracing. It should take one argument, an integer "mask", whose bits specify which system calls to trace. For example, to trace the fork system call, a program calls trace(1 << SYS_fork), where SYS_fork is a syscall number from kernel/syscall.h. 
+You have to modify the xv6 kernel to print out a line when each system call is about to return, if the system call's number is set in the mask. The line should contain the process id, the name of the system call and the return value; you don't need to print the system call arguments. The trace system call should enable tracing for the process that calls it and any children that it subsequently forks, but should not affect other processes. 
