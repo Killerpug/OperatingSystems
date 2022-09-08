@@ -144,12 +144,23 @@ Write a simple version of the UNIX find program: find all the files in a directo
 
 
 ## Running GDB
-Console1> make qemu-gdb
-console2> riscv64-unknown-elf-gdb user/executableOfInterest
-console2> target remote localhost:26000
+XV6 has a script to build Qemu debugger. However we must add a command in our root linux /home/.gdb to allow this script configurations.
+[source,bash]
+....
+set auto-load safe-path /
+#or
+add-auto-load-safe-path /mnt/c/Users/path/to/os_xv6/.gdbinit     #path to xv6 OS
+....
 
-//TODO: check how to default into _entry program
-//correct path in gdbini
+
+Finally, in our xv6 folder, we just add our file to debug and start the gdb server as follows:
+[source,bash]
+....
+Console1> riscv64-unknown-elf-gdb user/_executableOfInterest
+
+Console2> make CPUS=1 qemu-gdb      # CPUS=1 helps to debug easier
+....
+
 
 
 ## Lab System calls
