@@ -74,15 +74,6 @@ image::1_armCore.jpg[]
 
 The basic cycle of every CPU is to <<fetch-instruction>> the first instruction from memory, decode it to determine its type and operands, execute it, and then fetch, decode, and execute subsequent instructions. The set of instructions(ISA) is [red]#specific to the architecture of the CPU#, so if every application had to understand how all these things work in detail, no code would be portable. Furthermore, managing all these components optimally is challenging. This is the reason computers have a software layer called **operating system**, whose job is to provide handling of this computer model [green]#**making the applications reusable and also needing to write the OS only once per CPU architecture.**#
 
-[[computer-stack]]
-.computer stack
-image::2_OSoverview.jpg[]
-
-### User mode, supervisor mode and system calls
-On top of the hardware is software, computers have two modes of operation(defined in the mode bit): **kernel mode**(0, fundamental piece of software, also called supervisor/privileged mode, which has complete access to ALL hardware and can execute ANY instruction: interrupts, read write address registers of page tables...) and **user mode**(1, subset of instructions. Forbids any instruction that affect the control of the machine or does I/O).  
-This 2 modes are blurred in embedded systems, because they may not have an OS at all. Also some programs allow the users to help the OS or perform privileged functions(syscalls).
-
-You will see that *system calls* are the interface between user and kernel mode, they allow apps to invoke certain kernel functions like read. User/supervisor modes exist to achieve isolation applications, since only OS runs in supervisor mode, apps are unable to modify OS data structures and instructions(hence other apps/processes memories).
 
 ### Computer Architecture
 
@@ -161,7 +152,15 @@ NOTE: Operating systems differ from user programs in location of residence, comp
 ### OS Organization
 We will see how OSs(mainly with monolithic kernels as xv6) are organized to acomplish: multiplexing, isolation and interaction of processes.
 
+[[computer-stack]]
+.computer stack
+image::2_OSoverview.jpg[]
 
+#### User mode, supervisor mode and system calls
+On top of the hardware is software, computers have two modes of operation(defined in the mode bit): **kernel mode**(0, fundamental piece of software, also called supervisor/privileged mode, which has complete access to ALL hardware and can execute ANY instruction: interrupts, read write address registers of page tables...) and **user mode**(1, subset of instructions. Forbids any instruction that affect the control of the machine or does I/O).  
+This 2 modes are blurred in embedded systems, because they may not have an OS at all. Also some programs allow the users to help the OS or perform privileged functions(syscalls).
+
+You will see that *system calls* are the interface between user and kernel mode, they allow apps to invoke certain kernel functions like read. User/supervisor modes exist to achieve isolation applications, so that only OS runs in supervisor mode, apps are unable to modify OS data structures and instructions(hence other apps/processes memories).
 
 #### Abstracting physical resources
 Resource abstraction into services is typical to enable strong isolation  between applications that require access to sensitive hardware resources. For example, File systems "open, read, write, close" system calls provide  abstraction for reading and writing to the memory disk. This way, the *OS is able to manage the physical-disk* resource and *apps have the convenience of pathnames* when accessing the File System.
@@ -236,7 +235,7 @@ Finally on Main(), we initialize several devices, subsystems, the first process 
 #### System calls
 Programs can execute kernel services via system calls, which execute in a similar way to <<interrupt-process>> because systems calls are a special type of exceptions. <<system-calls-xv6>>, are the main interface for users to request  the execution of kernel resources (privileged-code that affects physical resources of the computer).
 
-Internally RISC-V provides [green]#**ecall**# to switch from user to kernel mode at an entry point specified by the kernel. The kernel evalues ecall with syscall-number as a parameter(this is basically a function pointer with all the valid system calls as described below).
+Internally RISC-V provides [green]#**ecall**# to switch from user to kernel mode at an entry point specified by the kernel. The kernel evalues ecall with syscall-number as a parameter(xv6 uses a7, syscall is basically a function pointer with all the valid system calls as described below).
 
 ```
 
@@ -292,7 +291,7 @@ syscall(void)
 Now, throw a few kids into the mix and suddenly things get a lot more interesting.
 
 .Process and thread
-image::8_proces_thread.jpg[]
+image::8_proces_thread.png[]
 
 ##### Process
 Each **running program is called process**, a process contains all the elements required to run and keep track of a program. A process allocates the following elements in [green]#*proc*# structure: 

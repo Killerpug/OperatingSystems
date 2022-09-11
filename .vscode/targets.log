@@ -7,7 +7,7 @@ make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --quest
 # There is NO WARRANTY, to the extent permitted by law.
  
 
-# Make data base, printed on Wed Sep 07 20:43:24 2022
+# Make data base, printed on Sun Sep 11 14:08:39 2022
 
 # Variables
 
@@ -74,7 +74,7 @@ ELECTRON_RUN_AS_NODE = 1
 # automatic
 %F = $(notdir $%)
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_25568_DWTKLKZIIDCXPZED
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_2548_UYUZBGXIGDORJFBJ
 # environment
 COMPUTERNAME = DESKTOP-2TGEBTR
 # environment
@@ -182,7 +182,7 @@ LANG = C
 # environment
 PROCESSOR_LEVEL = 6
 # environment
-VSCODE_PID = 25568
+VSCODE_PID = 2548
 # environment
 USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 # variable set hash-table stats:
@@ -212,10 +212,10 @@ USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 # C:\Users\etapi\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts (key C:/Users/etapi/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0/LocalCache/local-packages/Python310/Scripts, mtime 1661636922): 13 files, no impossibilities.
 # C:\Program Files\Java\jre1.8.0_341\bin (key C:/Program Files/Java/jre1.8.0_341/bin, mtime 1661647535): 130 files, no impossibilities.
 # C:\Program Files\dotnet\ (key C:/Program Files/dotnet/, mtime 1660507397): 12 files, no impossibilities.
-# C:\WINDOWS\system32 (key C:/WINDOWS/system32, mtime 1662148206): 2958 files, no impossibilities.
+# C:\WINDOWS\system32 (key C:/WINDOWS/system32, mtime 1662824527): 2958 files, no impossibilities.
 # C:\Program Files\Graphviz\bin (key C:/Program Files/Graphviz/bin, mtime 1640485429): 60 files, no impossibilities.
 # c:\users\etapi\appdata\local\packages\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\localcache\local-packages\python310\site-packages (key c:/users/etapi/appdata/local/packages/pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0/localcache/local-packages/python310/site-packages, mtime 1661636920): 30 files, no impossibilities.
-# C:\Users\etapi\AppData\Local\Microsoft\WindowsApps (key C:/Users/etapi/AppData/Local/Microsoft/WindowsApps, mtime 1662592913): 32 files, no impossibilities.
+# C:\Users\etapi\AppData\Local\Microsoft\WindowsApps (key C:/Users/etapi/AppData/Local/Microsoft/WindowsApps, mtime 1662923182): 32 files, no impossibilities.
 
 # 3807 files, no impossibilities in 22 directories.
 
@@ -281,7 +281,7 @@ GNUmakefile:
 # strcache performance: lookups = 3837 / hit rate = 3%
 # hash-table stats:
 # Load=3706/8192=45%, Rehash=0, Collisions=1411/3837=37%
-# Finished Make data base on Wed Sep 07 20:43:24 2022
+# Finished Make data base on Sun Sep 11 14:08:39 2022
 
  
 make.exe: *** No rule to make target 'all'.  Stop.

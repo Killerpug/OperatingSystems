@@ -446,37 +446,57 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_a_little_history">2. A little history</a></li>
 <li><a href="#_fundamentals">3. Fundamentals</a>
 <ul class="sectlevel2">
-<li><a href="#_user_mode_supervisor_mode_and_system_calls">3.1. User mode, supervisor mode and system calls</a></li>
-<li><a href="#_computer_architecture">3.2. Computer Architecture</a>
+<li><a href="#_computer_architecture">3.1. Computer Architecture</a>
 <ul class="sectlevel3">
-<li><a href="#_executing_instructions">3.2.1. Executing instructions:</a></li>
-<li><a href="#_types_of_data_transfering">3.2.2. Types of Data transfering</a></li>
-<li><a href="#_startup">3.2.3. Startup:</a></li>
-<li><a href="#_interruptsexceptions">3.2.4. Interrupts/exceptions:</a></li>
+<li><a href="#_executing_instructions">3.1.1. Executing instructions:</a></li>
+<li><a href="#_types_of_data_transfering">3.1.2. Types of Data transfering</a></li>
+<li><a href="#_startup">3.1.3. Startup:</a></li>
+<li><a href="#_interruptsexceptions">3.1.4. Interrupts/exceptions:</a></li>
 </ul>
 </li>
-<li><a href="#_what_is_an_operating_system">3.3. What is an operating system?</a>
+<li><a href="#_what_is_an_operating_system">3.2. What is an operating system?</a>
 <ul class="sectlevel4">
 <li><a href="#_os_responsibilities">OS Responsibilities</a></li>
 </ul>
 </li>
-<li><a href="#_os_organization">3.4. OS Organization</a>
+<li><a href="#_os_organization">3.3. OS Organization</a>
 <ul class="sectlevel3">
-<li><a href="#_abstracting_physical_resources">3.4.1. Abstracting physical resources</a></li>
-<li><a href="#_kernel">3.4.2. Kernel</a></li>
-<li><a href="#_system_calls">3.4.3. System calls</a></li>
-<li><a href="#_process_and_threads">3.4.4. Process and Threads</a></li>
+<li><a href="#_user_mode_supervisor_mode_and_system_calls">3.3.1. User mode, supervisor mode and system calls</a></li>
+<li><a href="#_abstracting_physical_resources">3.3.2. Abstracting physical resources</a></li>
+<li><a href="#_kernel">3.3.3. Kernel</a>
+<ul class="sectlevel4">
+<li><a href="#_kernel_design">Kernel design</a></li>
+<li><a href="#_how_is_xv6_kernel_organized_booting_up_xv6">How is XV6-Kernel Organized: booting up XV6</a></li>
 </ul>
 </li>
-<li><a href="#_os_interfaces">3.5. OS Interfaces</a>
-<ul class="sectlevel3">
-<li><a href="#_file_descriptors_for_io">3.5.1. File descriptors for I/O</a></li>
-<li><a href="#_pipes">3.5.2. Pipes</a></li>
-<li><a href="#_file_system_and_links">3.5.3. file system and links</a></li>
+<li><a href="#_system_calls">3.3.4. System calls</a></li>
+<li><a href="#_process_and_threads">3.3.5. Process and Threads</a>
+<ul class="sectlevel4">
+<li><a href="#_analogy_for_processes_and_threads">Analogy for processes and threads</a></li>
+<li><a href="#_process">Process</a></li>
+<li><a href="#_thread">Thread</a></li>
 </ul>
 </li>
-<li><a href="#_memory_management">3.6. Memory Management</a></li>
-<li><a href="#_virtualization_vs_interpretation">3.7. Virtualization Vs Interpretation:</a></li>
+</ul>
+</li>
+<li><a href="#_os_interfaces">3.4. OS Interfaces</a>
+<ul class="sectlevel3">
+<li><a href="#_file_descriptors_for_io">3.4.1. File descriptors for I/O</a>
+<ul class="sectlevel4">
+<li><a href="#_reading_and_writing_into_a_file">Reading and writing into a file</a></li>
+</ul>
+</li>
+<li><a href="#_pipes">3.4.2. Pipes</a></li>
+<li><a href="#_file_system_and_links">3.4.3. File system and links</a>
+<ul class="sectlevel4">
+<li><a href="#_file_system">File system</a></li>
+<li><a href="#_links">Links</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_memory_management">3.5. Memory Management</a></li>
+<li><a href="#_virtualization_vs_interpretation">3.6. Virtualization Vs Interpretation:</a></li>
 </ul>
 </li>
 <li><a href="#_terminology">4. Terminology</a></li>
@@ -606,158 +626,143 @@ With the development of Large Scale Integration circuits, chips containing thous
 <div class="paragraph data-line-75">
 <p>The basic cycle of every CPU is to <a href="#fetch-instruction">fetch instructions</a> the first instruction from memory, decode it to determine its type and operands, execute it, and then fetch, decode, and execute subsequent instructions. The set of instructions(ISA) is <span class="red">specific to the architecture of the CPU</span>, so if every application had to understand how all these things work in detail, no code would be portable. Furthermore, managing all these components optimally is challenging. This is the reason computers have a software layer called <strong>operating system</strong>, whose job is to provide handling of this computer model <span class="green"><strong>making the applications reusable and also needing to write the OS only once per CPU architecture.</strong></span></p>
 </div>
-<div id="computer-stack" class="imageblock data-line-79">
-<div class="content">
-<img src="images/2_OSoverview.jpg" alt="2 OSoverview">
-</div>
-<div class="title">Figure 2. computer stack</div>
-</div>
-<div class="sect2 data-line-81">
-<h3 id="_user_mode_supervisor_mode_and_system_calls">3.1. User mode, supervisor mode and system calls</h3>
-<div class="paragraph data-line-82">
-<p>On top of the hardware is software, computers have two modes of operation(defined in the mode bit): <strong>kernel mode</strong>(0, fundamental piece of software, also called supervisor/privileged mode, which has complete access to ALL hardware and can execute ANY instruction: interrupts, read write address registers of page tables&#8230;&#8203;) and <strong>user mode</strong>(1, subset of instructions. Forbids any instruction that affect the control of the machine or does I/O).
-This 2 modes are blurred in embedded systems, because they may not have an OS at all. Also some programs allow the users to help the OS or perform privileged functions(syscalls).</p>
-</div>
-<div class="paragraph data-line-85">
-<p>You will see that <strong>system calls</strong> are the interface between user and kernel mode, they allow apps to invoke certain kernel functions like read. User/supervisor modes exist to achieve isolation applications, since only OS runs in supervisor mode, apps are unable to modify OS data structures and instructions(hence other apps/processes memories).</p>
-</div>
-</div>
-<div class="sect2 data-line-87">
-<h3 id="_computer_architecture">3.2. Computer Architecture</h3>
-<div class="sect3 data-line-89">
-<h4 id="_executing_instructions">3.2.1. Executing instructions:</h4>
-<div class="paragraph data-line-90">
+<div class="sect2 data-line-78">
+<h3 id="_computer_architecture">3.1. Computer Architecture</h3>
+<div class="sect3 data-line-80">
+<h4 id="_executing_instructions">3.1.1. Executing instructions:</h4>
+<div class="paragraph data-line-81">
 <p>A CPU can load instructions only from memory, so any programs to run must be stored there. General purpose computers run the program from r/w memory (RAM). Fetch instruction receives an instruction from ROM(Flash in this case) and uses load-store instructions to process data, <strong>load</strong> moves a word or byte from main memory to internal register within CPU and <strong>store</strong> moves the content of the register to main memory</p>
 </div>
-<div id="fetch-instruction" class="imageblock data-line-94">
+<div id="fetch-instruction" class="imageblock data-line-85">
 <div class="content">
 <img src="images/3_computerInstructions.jpg" alt="3 computerInstructions">
 </div>
-<div class="title">Figure 3. fetch instructions</div>
+<div class="title">Figure 2. fetch instructions</div>
 </div>
 </div>
-<div class="sect3 data-line-96">
-<h4 id="_types_of_data_transfering">3.2.2. Types of Data transfering</h4>
-<div class="paragraph data-line-98">
+<div class="sect3 data-line-87">
+<h4 id="_types_of_data_transfering">3.1.2. Types of Data transfering</h4>
+<div class="paragraph data-line-89">
 <p><strong>Interrupt Driven I/O:</strong></p>
 </div>
-<div class="paragraph data-line-100">
+<div class="paragraph data-line-91">
 <p>The IO device send data to the device controller, which examines the contents, transfers the data and informs the CPU via interrupt(one interrupt per byte) that the IO device requires operation and the OS responds with the required operation. This works fine for small amounts of data. But produce high overhead when used for bulk data movement such as disk IO.</p>
 </div>
-<div class="paragraph data-line-102">
+<div class="paragraph data-line-93">
 <p><strong>DMA:</strong></p>
 </div>
-<div class="paragraph data-line-104">
+<div class="paragraph data-line-95">
 <p>After setting buffers, pointers and counters for IO device, device controller transfers an entire block of data directly to or from its own buffer storage to memory without CPU intervention(only one interrupt per block).</p>
 </div>
 </div>
-<div class="sect3 data-line-107">
-<h4 id="_startup">3.2.3. Startup:</h4>
-<div class="paragraph data-line-108">
+<div class="sect3 data-line-98">
+<h4 id="_startup">3.1.3. Startup:</h4>
+<div class="paragraph data-line-99">
 <p>When a computer its powered up or rebooted the bootloader runs, a simple program stored in ROM or EEPROM. It initializes all aspects of the system: from CPU registers to device controllers and memory contents. It also must know how to locate and load the OS and start executing the <strong>kernel</strong> (which is the program that runs all the time.)</p>
 </div>
 </div>
-<div class="sect3 data-line-110">
-<h4 id="_interruptsexceptions">3.2.4. Interrupts/exceptions:</h4>
-<div class="ulist data-line-112">
+<div class="sect3 data-line-101">
+<h4 id="_interruptsexceptions">3.1.4. Interrupts/exceptions:</h4>
+<div class="ulist data-line-103">
 <ul>
-<li class="data-line-112">
+<li class="data-line-103">
 <p>Hardware → physical signals either from peripherals or the cpu itself.</p>
 </li>
-<li class="data-line-113">
+<li class="data-line-104">
 <p>Software → executing special operation called <strong>system call</strong>(provide means for a user to ask the OS to perform tasks reserved for the OS).</p>
 </li>
 </ul>
 </div>
-<div class="paragraph data-line-115">
+<div class="paragraph data-line-106">
 <p><strong>General interrupt/exception process</strong></p>
 </div>
-<div class="paragraph data-line-117">
+<div class="paragraph data-line-108">
 <p>When an exception or interrupt occurs, execution transition from user mode to kernel mode where the exception or interrupt is handled takes place as follows.</p>
 </div>
-<div id="interrupt-process" class="imageblock data-line-121">
+<div id="interrupt-process" class="imageblock data-line-112">
 <div class="content">
 <img src="images/4_overviewInterrupt.jpg" alt="4 overviewInterrupt">
 </div>
-<div class="title">Figure 4. interrupt process overview</div>
+<div class="title">Figure 3. interrupt process overview</div>
 </div>
-<div class="paragraph data-line-123">
+<div class="paragraph data-line-114">
 <p><strong>Interruption process on ARM microcontrollers:</strong></p>
 </div>
-<div class="paragraph data-line-125">
+<div class="paragraph data-line-116">
 <p>1) To save the context:</p>
 </div>
-<div class="paragraph data-line-127">
+<div class="paragraph data-line-118">
 <p>In parallel, save(push) the address of the interrupted instruction in the Program Counter. Also, we store status register(xPSR), LR and registers R0, R1, R2, R3 and R12.</p>
 </div>
-<div class="imageblock data-line-129">
+<div class="imageblock data-line-121">
 <div class="content">
 <img src="images/5_IRQsavestate.jpg" alt="5 IRQsavestate">
 </div>
+<div class="title">Figure 4. IRQ context switch</div>
 </div>
-<div class="paragraph data-line-131">
+<div class="paragraph data-line-123">
 <p>2) Then, to handle the exception or interruption:</p>
 </div>
-<div class="paragraph data-line-133">
+<div class="paragraph data-line-125">
 <p>Computer locates the IRQn on the vector table, which contains the <strong>address of the interrupt handler(ISR)</strong>. Finally, code on that handler function is executed and once its finished, the context is restored.</p>
 </div>
-<div class="imageblock data-line-136">
+<div class="imageblock data-line-128">
 <div class="content">
 <img src="images/6_ISRhandler.png" alt="6 ISRhandler">
 </div>
 <div class="title">Figure 5. ISR location on Vector table</div>
 </div>
-<div class="paragraph data-line-138">
+<div class="paragraph data-line-130">
 <p>Since only a predefined number of interrupts is possible, a table of pointers to interrupt handling routines is commonly used to provide speed, this table of pointers is stored in low memory and is called interrupt vector (inside vector table).</p>
 </div>
 </div>
 </div>
-<div class="sect2 data-line-141">
-<h3 id="_what_is_an_operating_system">3.3. What is an operating system?</h3>
-<div class="paragraph data-line-142">
+<div class="sect2 data-line-133">
+<h3 id="_what_is_an_operating_system">3.2. What is an operating system?</h3>
+<div class="paragraph data-line-134">
 <p>An operating systems acts as an intermediary between the applications in a computer and the hardware(see <a href="#computer-stack">computer stack</a>, so its basically a driver). The OS is a program that manages a computers resources by offering services(cpu time, memory space via file storage, IO operations). An OS can be designed to be convenient or efficient but the <strong>main goals  of an OS are:</strong></p>
 </div>
-<div class="ulist data-line-144">
+<div class="ulist data-line-136">
 <ul>
-<li class="data-line-144">
+<li class="data-line-136">
 <p>Abstract: hardware for portability and convinience.</p>
 </li>
-<li class="data-line-145">
+<li class="data-line-137">
 <p>Multiplexing: allow multiple applications to share hardware and cooperate while isolating programs to provide security.</p>
 </li>
 </ul>
 </div>
-<div class="sect4 data-line-147">
+<div class="sect4 data-line-139">
 <h5 id="_os_responsibilities">OS Responsibilities</h5>
-<div class="ulist data-line-149">
+<div class="ulist data-line-141">
 <ul>
-<li class="data-line-149">
+<li class="data-line-141">
 <p>Scheduling processes and threads on the CPUs. And allocating the pertinent resources.</p>
 </li>
-<li class="data-line-150">
+<li class="data-line-142">
 <p>Creating and deleting both user and system processes.</p>
 </li>
-<li class="data-line-151">
+<li class="data-line-143">
 <p>Suspending and resuming processes</p>
 </li>
-<li class="data-line-152">
+<li class="data-line-144">
 <p>Providing mechanisms for process synchronization</p>
 </li>
-<li class="data-line-153">
+<li class="data-line-145">
 <p>Providing mechanisms for process communication</p>
 </li>
-<li class="data-line-154">
+<li class="data-line-146">
 <p>Keeping track of which parts of memory are currently being used and who is using them</p>
 </li>
-<li class="data-line-155">
+<li class="data-line-147">
 <p>Deciding which processes (or parts of processes) and data to move into and out of memory</p>
 </li>
-<li class="data-line-156">
+<li class="data-line-148">
 <p>Allocating and deallocating memory space as needed</p>
 </li>
 </ul>
 </div>
-<div class="admonitionblock note data-line-158">
+<div class="admonitionblock note data-line-150">
 <table>
 <tr>
 <td class="icon">
@@ -771,73 +776,251 @@ Operating systems differ from user programs in location of residence, complexity
 </div>
 </div>
 </div>
-<div class="sect2 data-line-160">
-<h3 id="_os_organization">3.4. OS Organization</h3>
-<div class="paragraph data-line-161">
+<div class="sect2 data-line-152">
+<h3 id="_os_organization">3.3. OS Organization</h3>
+<div class="paragraph data-line-153">
 <p>We will see how OSs(mainly with monolithic kernels as xv6) are organized to acomplish: multiplexing, isolation and interaction of processes.</p>
 </div>
+<div id="computer-stack" class="imageblock data-line-157">
+<div class="content">
+<img src="images/2_OSoverview.jpg" alt="2 OSoverview">
+</div>
+<div class="title">Figure 6. computer stack</div>
+</div>
+<div class="sect3 data-line-159">
+<h4 id="_user_mode_supervisor_mode_and_system_calls">3.3.1. User mode, supervisor mode and system calls</h4>
+<div class="paragraph data-line-160">
+<p>On top of the hardware is software, computers have two modes of operation(defined in the mode bit): <strong>kernel mode</strong>(0, fundamental piece of software, also called supervisor/privileged mode, which has complete access to ALL hardware and can execute ANY instruction: interrupts, read write address registers of page tables&#8230;&#8203;) and <strong>user mode</strong>(1, subset of instructions. Forbids any instruction that affect the control of the machine or does I/O).
+This 2 modes are blurred in embedded systems, because they may not have an OS at all. Also some programs allow the users to help the OS or perform privileged functions(syscalls).</p>
+</div>
+<div class="paragraph data-line-163">
+<p>You will see that <strong>system calls</strong> are the interface between user and kernel mode, they allow apps to invoke certain kernel functions like read. User/supervisor modes exist to achieve isolation applications, so that only OS runs in supervisor mode, apps are unable to modify OS data structures and instructions(hence other apps/processes memories).</p>
+</div>
+</div>
 <div class="sect3 data-line-165">
-<h4 id="_abstracting_physical_resources">3.4.1. Abstracting physical resources</h4>
+<h4 id="_abstracting_physical_resources">3.3.2. Abstracting physical resources</h4>
 <div class="paragraph data-line-166">
 <p>Resource abstraction into services is typical to enable strong isolation  between applications that require access to sensitive hardware resources. For example, File systems "open, read, write, close" system calls provide  abstraction for reading and writing to the memory disk. This way, the <strong>OS is able to manage the physical-disk</strong> resource and <strong>apps have the convenience of pathnames</strong> when accessing the File System.</p>
 </div>
 <div class="paragraph data-line-168">
 <p>Another example is the file descriptors systemcalls, they allow OS to decide where to place a pipe/file in memory and keeps away the app from interacting directly with memory while providing status signals(end-of-file, open file&#8230;&#8203;).  The system-call interface is designed to provide convenience and strong isolation.</p>
 </div>
+<div class="admonitionblock note data-line-170">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<strong>Why abstracting?</strong> The operating system must assume that a process&#8217;s user-level code will do its best to wreck the kernel or other processes. User code may try to dereference pointers outside its allowed address space; it may attempt to execute any RISC-V instructions, even those not intended for user code; it may try to read and write any RISC-V control register; it may try to directly access device hardware; and it may pass clever values to system calls in an attempt to trick the kernel into crashing or doing something stupid. The <strong>kernel&#8217;s goal is to restrict each user processes so that all it can do is read/write/execute its own user memory, use the 32 general-purpose RISC-V registers, and only affect the kernel and other processes in the ways that system calls are intended to allow it</strong>. The kernel must prevent any other actions.
+</td>
+</tr>
+</table>
 </div>
-<div class="sect3 data-line-171">
-<h4 id="_kernel">3.4.2. Kernel</h4>
-<div class="paragraph data-line-172">
+</div>
+<div class="sect3 data-line-172">
+<h4 id="_kernel">3.3.3. Kernel</h4>
+<div class="paragraph data-line-173">
 <p>XV6 OS takes the form of a kernel, a special program that provides services to running programs. A kernel has direct access to hardware components like RAM, CPU, DISK&#8230;&#8203; and it implements abstractions to that HW via modules/programs like: File system(tree directory, file contents), memory allocation, IO manager&#8230;&#8203; that provide common kernel services to different programs in user space as shown.</p>
 </div>
-<div class="imageblock data-line-174">
+<div class="imageblock data-line-176">
 <div class="content">
 <img src="images/9_kernel_services.jpg" alt="9 kernel services">
 </div>
+<div class="title">Figure 7. Kernel services</div>
 </div>
-<div class="sect4 data-line-176">
+<div class="sect4 data-line-178">
 <h5 id="_kernel_design">Kernel design</h5>
-<div class="paragraph data-line-177">
+<div class="paragraph data-line-179">
 <p>A key design question is "what part of the OS should run in supervisor mode". There are 2 main posibilities:</p>
 </div>
-<div class="ulist data-line-179">
+<div class="ulist data-line-181">
 <ul>
-<li class="data-line-179">
-<p>Monolithic kernel: The entire OS resides in the kernel, so that all system calls run in supervisor mode.</p>
-<div class="olist loweralpha data-line-180">
-<ol class="loweralpha" type="a">
-<li class="data-line-180">
-<p>pros: doesn&#8217;t waste time on deciding which parts of OS need full HW privilege. Easier to cooperate between different parts(E.G. buffer and file system).</p>
-</li>
 <li class="data-line-181">
+<p>Monolithic kernel: The entire OS resides in the kernel, so that all system calls run in supervisor mode.</p>
+<div class="olist loweralpha data-line-182">
+<ol class="loweralpha" type="a">
+<li class="data-line-182">
+<p>pros: doesn&#8217;t waste time on deciding which parts of OS need full HW privilege. Easier to cooperate between different parts(E.G. buffer and file system). Faster performance.</p>
+</li>
+<li class="data-line-183">
 <p>cons: Interfaces between parts of the OS are often complex. Errors make entire kernel to fail.</p>
 </li>
 </ol>
 </div>
 </li>
-<li class="data-line-183">
-<p>Microkernel: Minimizes the amount of OS code that runs in supervisor mode. For example, the File system can run as a user-level process and apps that require file system can communicate via inter-process messages.
-..pros: Relative simple organization(kernel consist of few low-level function for starting application, sending messages and accessing hardware). Separation of concerns. Most of OS resids in user-level servers.
-..cons:</p>
+<li class="data-line-185">
+<p>Microkernel: Minimizes the amount of OS code that runs in supervisor mode. For example, the File system can run as a user-level process and apps that require file system can communicate via inter-process messages.</p>
+<div class="olist loweralpha data-line-186">
+<ol class="loweralpha" type="a">
+<li class="data-line-186">
+<p>pros: Relative simple organization(kernel consist of few low-level function for starting application, sending messages and accessing hardware). Separation of concerns. Most of OS resides in user-level servers. More reliable.</p>
+</li>
+<li class="data-line-187">
+<p>cons: time overhead to pass messages and waiting for response.</p>
+</li>
+</ol>
+</div>
+</li>
+<li class="data-line-189">
+<p>Hibrid: the two methods above can be combined to deal with the tradeoffs of speed vs simplicity/reliability</p>
 </li>
 </ul>
 </div>
-<div class="imageblock data-line-187">
+<div class="imageblock data-line-192">
 <div class="content">
 <img src="images/OSO_kerneldesign_MonolithicVsMicrokernel.png" alt="OSO kerneldesign MonolithicVsMicrokernel">
 </div>
+<div class="title">Figure 8. Monolithic Kernel vs QNX Microkernel</div>
+</div>
+</div>
+<div class="sect4 data-line-194">
+<h5 id="_how_is_xv6_kernel_organized_booting_up_xv6">How is XV6-Kernel Organized: booting up XV6</h5>
+<table class="tableblock frame-all grid-all stretch data-line-198">
+<caption class="title">Table 1. kernel source files</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">File</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bio.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Disk block cache for the file system.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">console.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Connect to the user keyboard and screen.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">entry.S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Very first boot instructions.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">exec.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">exec() system call.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File descriptor support.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">fs.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File system.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kalloc.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Physical page allocator.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kernelvec.S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handle traps from kernel, and timer interrupts.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">log.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File system logging and crash recovery.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">main.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control initialization of other modules during boot.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pipe.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pipes.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">plic.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RISC-V interrupt controller.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">printf.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Formatted output to the console.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">proc.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Processes and scheduling.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sleeplock.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Locks that yield the CPU.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spinlock.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Locks that don’t yield the CPU.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">start.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Early machine-mode boot code.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">C string and byte-array library.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">swtch.S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Thread switching.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">syscall.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Dispatch system calls to handling function.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sysfile.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File-related system calls.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sysproc.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Process-related system calls.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">trampoline.S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Assembly code to switch between user and kernel.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">trap.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">C code to handle and return from traps and interrupts.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">uart.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Serial-port console device driver.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">virtio_disk.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Disk device driver.</p></td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vm.c</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manage page tables and address spaces.</p></td>
+</tr>
+</tfoot>
+</table>
+<div class="paragraph data-line-229">
+<p>When the RISC-V computer powers on, it starts in a bootloader stored in ROM, the bootloader loads XV6 kernel into memory(0x8000_0000) and in machine mode(configuration mode) XV6 starts at _entry. RISC-V starts with paging hardware disabled(virtual address maps directly to physical address).</p>
+</div>
+<div class="paragraph data-line-231">
+<p>Instructions at _entry set up a stack for Early-machine boot code(in file start.c) and the stackpointer to stack0+4096(RISC-V grows down). On start, machine performs machine-mode only configurations(E.g. timer interrupts, pass responsabilities(memory access, interrupts and exceptions) to kernel mode) and switches to kernel mode by calling <strong>mret</strong>(This instruction is most often used to return from a previous call in supervisor mode to machine mode. Since start isn’t returning from such a call, instead we sets things up as if there had been one: setting the previous privilege mode to supervisor in the register mstatus, and return address to main by writing main’s address into the register <strong>mepc</strong>).</p>
+</div>
+<div class="paragraph data-line-233">
+<p>Finally on Main(), we initialize several devices, subsystems, the first process by calling userinit(in proc.c, which executes the <strong>exec</strong> system call) and creates a new console device.</p>
 </div>
 </div>
 </div>
-<div class="sect3 data-line-189">
-<h4 id="_system_calls">3.4.3. System calls</h4>
-<div class="paragraph data-line-190">
+<div class="sect3 data-line-235">
+<h4 id="_system_calls">3.3.4. System calls</h4>
+<div class="paragraph data-line-236">
 <p>Programs can execute kernel services via system calls, which execute in a similar way to <a href="#interrupt-process">interrupt process overview</a> because systems calls are a special type of exceptions. <a href="#system-calls-xv6">Available system calls in xv6</a>, are the main interface for users to request  the execution of kernel resources (privileged-code that affects physical resources of the computer).</p>
 </div>
-<div class="paragraph data-line-192">
+<div class="paragraph data-line-238">
 <p>Internally RISC-V provides <span class="green"><strong>ecall</strong></span> to switch from user to kernel mode at an entry point specified by the kernel. The kernel evalues ecall with syscall-number as a parameter(this is basically a function pointer with all the valid system calls as described below).</p>
 </div>
-<div class="listingblock data-line-194">
+<div class="listingblock data-line-240">
 <div class="content">
 <pre class="highlight"><code class="language-C" data-lang="C">static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -880,23 +1063,23 @@ syscall(void)
 </div>
 </div>
 </div>
-<div class="sect3 data-line-237">
-<h4 id="_process_and_threads">3.4.4. Process and Threads</h4>
-<div class="sect4 data-line-239">
+<div class="sect3 data-line-283">
+<h4 id="_process_and_threads">3.3.5. Process and Threads</h4>
+<div class="sect4 data-line-285">
 <h5 id="_analogy_for_processes_and_threads">Analogy for processes and threads</h5>
-<div class="ulist data-line-241">
+<div class="ulist data-line-287">
 <ul>
-<li class="data-line-241">
+<li class="data-line-287">
 <p>A process as a house: A house is really a container, with certain attributes (such as the amount of floor space, the number of bedrooms, and so on). If you look at it that way, the house really doesn&#8217;t actively do anything on its own — it&#8217;s a passive object.</p>
 </li>
-<li class="data-line-242">
+<li class="data-line-288">
 <p>The occupants as threads: The people living in the house are the active objects — they&#8217;re the ones using the various rooms, watching TV, cooking, taking showers, and so on.</p>
-<div class="olist arabic data-line-243">
+<div class="olist arabic data-line-289">
 <ol class="arabic">
-<li class="data-line-243">
+<li class="data-line-289">
 <p><strong>Single threaded</strong>: If you&#8217;ve ever lived on your own, you know that you can do anything you want in the house at any time, because there&#8217;s nobody else in the house.</p>
 </li>
-<li class="data-line-244">
+<li class="data-line-290">
 <p><strong>Multi threaded</strong>: Things change dramatically when you add another person into the house. Let&#8217;s say you get married, so now you have a spouse living there too. You can&#8217;t just march into the washroom at any given point; you need to check first to make sure your spouse isn&#8217;t in there. If you have two responsible adults living in a house, generally you can be reasonably lax about “security” — you know that the other adult will respect your space, won&#8217;t try to set the kitchen on fire (deliberately!), and so on.
 Now, throw a few kids into the mix and suddenly things get a lot more interesting.</p>
 </li>
@@ -905,138 +1088,168 @@ Now, throw a few kids into the mix and suddenly things get a lot more interestin
 </li>
 </ul>
 </div>
+<div class="imageblock data-line-294">
+<div class="content">
+<img src="images/8_proces_thread.png" alt="8 proces thread">
 </div>
-<div class="sect4 data-line-247">
+<div class="title">Figure 9. Process and thread</div>
+</div>
+</div>
+<div class="sect4 data-line-296">
 <h5 id="_process">Process</h5>
-<div class="paragraph data-line-248">
-<p>Each <strong>running program is called process</strong> and it allocates some resources, such as:</p>
+<div class="paragraph data-line-297">
+<p>Each <strong>running program is called process</strong>, a process contains all the elements required to run and keep track of a program. A process allocates the following elements in <span class="green"><strong>proc</strong></span> structure:</p>
 </div>
-<div class="ulist data-line-250">
+<div class="ulist data-line-299">
 <ul>
-<li class="data-line-250">
-<p>memory(for instructions, data, stack&#8230;&#8203;)</p>
+<li class="data-line-299">
+<p>A user and a kernel stack. Only one stack is actively used at a time and it depends on the instructions in execution(<strong>ecall</strong> raises privileges to kernel instructions and <strong>sret</strong> lowers privilege level to resume executing user instructions).</p>
 </li>
-<li class="data-line-251">
+<li class="data-line-300">
+<p>heap</p>
+</li>
+<li class="data-line-301">
+<p>code(user text and data)</p>
+</li>
+<li class="data-line-302">
 <p>process identifier(pid),</p>
 </li>
-<li class="data-line-252">
+<li class="data-line-303">
 <p>file descriptors</p>
 </li>
-<li class="data-line-253">
+<li class="data-line-304">
+<p>page table, maps virtual addresses to physical addresses</p>
+</li>
+<li class="data-line-305">
+<p>Trampoline and trapframes, used to transition in and out of the kernel. Trampoline is the code for transition and trapframe is a structure filled by trampoline to save/restore the state of the process.</p>
+</li>
+<li class="data-line-306">
 <p>optionally inter-process communication(IPC) channels.</p>
 </li>
 </ul>
 </div>
-<div class="imageblock data-line-256">
+<div class="paragraph data-line-308">
+<p>The process implementation includes user/kernel mode flag, addresss space(own memory), and time slicing of threads mechanisms to create strong isolation. Isolation is achieved by creating the illusion to a program that is has its own private machine, a process only has access to a "private" address space which other processes cannot read or write.</p>
+</div>
+<div class="imageblock data-line-311">
 <div class="content">
-<img src="images/8_proces_thread.jpg" alt="8 proces thread">
+<img src="images/OSO_proccessAndThread_ProcessVirtualAddressSpace.png" alt="OSO proccessAndThread ProcessVirtualAddressSpace">
 </div>
-<div class="title">Figure 6. Process and thread</div>
+<div class="title">Figure 10. Layout of a process&#8217;s virtual address space</div>
 </div>
+<div class="paragraph data-line-313">
+<p>XV6 uses page tables(implemented in HW) to give each process its own address space. RISC-V page table translates/maps a virtual address(in range  of 0 - 2^38 since HW only uses 38 bits when looking up virtual adresses in page tables) to a physical address. XV6 maintains separate page table for each process.</p>
 </div>
-<div class="sect4 data-line-258">
-<h5 id="_process_states">process states</h5>
-<div class="paragraph data-line-259">
+<div class="paragraph data-line-315">
+<p>At the top of the address space, XV6 reserves a page for trampoline(code to transition in and out the kernel) and a page for trapframe(structure with status-data of the process, filled by trampoline to save/restore the state of the process).</p>
+</div>
+<div class="sect5 data-line-317">
+<h6 id="_process_states">process states</h6>
+<div class="paragraph data-line-318">
 <p>xv6 time-shares processes, this means that it transparently switches available CPU cores among the set of processes <strong>ready</strong> to execute processes. a process can be in either of the following states:</p>
 </div>
-<div class="ulist data-line-261">
+<div class="ulist data-line-320">
 <ul>
-<li class="data-line-261">
+<li class="data-line-320">
 <p>idle</p>
 </li>
-<li class="data-line-262">
+<li class="data-line-321">
 <p>ready: the process is ready to be queued for CPU execution</p>
 </li>
-<li class="data-line-263">
+<li class="data-line-322">
 <p>waiting: the process is not executing, it is waiting for a resource.</p>
 </li>
 </ul>
 </div>
 </div>
-<div class="sect4 data-line-265">
-<h5 id="_process_creation">process creation</h5>
-<div class="paragraph data-line-266">
+<div class="sect5 data-line-324">
+<h6 id="_process_creation">process creation</h6>
+<div class="paragraph data-line-325">
 <p>a process may create a new process using <span class="green"><strong>fork</strong></span> system call. fork gives the new process exactly the same memory contents(instructions and data) as the calling process. After child is created, both process will execute the following instructions.</p>
 </div>
-<div class="listingblock data-line-267">
+<div class="listingblock data-line-326">
 <div class="content">
 <pre class="highlight"><code class="language-C" data-lang="C">int pid = fork();</code></pre>
 </div>
 </div>
 </div>
-<div class="sect4 data-line-272">
-<h5 id="_thread">thread</h5>
-<div class="paragraph data-line-273">
-<p>A thread is just the flow of execution or control within one process. A process has attributes like:</p>
 </div>
-<div class="ulist data-line-275">
+<div class="sect4 data-line-331">
+<h5 id="_thread">Thread</h5>
+<div class="paragraph data-line-332">
+<p>A thread is just the flow of execution or control within one process. A process thread has attributes like:</p>
+</div>
+<div class="ulist data-line-334">
 <ul>
-<li class="data-line-275">
+<li class="data-line-334">
 <p>priority</p>
 </li>
-<li class="data-line-276">
+<li class="data-line-335">
 <p>scheduling algorithm</p>
 </li>
-<li class="data-line-277">
+<li class="data-line-336">
 <p>registers, CPU mask for multicore, signals and more</p>
 </li>
 </ul>
 </div>
-<div class="paragraph data-line-279">
-<p>so that multiple threads can be execute within one mediator-process. Basically a process changes executing thread according to scheduling policy.</p>
+<div class="paragraph data-line-338">
+<p>so that multiple threads can be execute within one mediator-process. Basically a process changes executing thread according to scheduling policy. Threads create the illusion that the process posess its own CPU.</p>
+</div>
+<div class="paragraph data-line-340">
+<p>Switching between processes happen in a similar fashion, kernel suspends currently running thread and resumes another process&#8217;s thread. The thread also has a stack(local variables, function call return adress) and state(suspended/running status).</p>
 </div>
 </div>
 </div>
 </div>
-<div class="sect2 data-line-283">
-<h3 id="_os_interfaces">3.5. OS Interfaces</h3>
-<div class="paragraph data-line-284">
+<div class="sect2 data-line-344">
+<h3 id="_os_interfaces">3.4. OS Interfaces</h3>
+<div class="paragraph data-line-345">
 <p>The job of an operating system is to share a computer among multiple programs and to provide a more useful set of services than the hardware alone supports. An OS makes abstractions of hardware so that programs do not concern about underlying hardware and at the same time facilitate the interaction between programs&#8592;&#8594;OS.</p>
 </div>
-<div class="sect3 data-line-286">
-<h4 id="_file_descriptors_for_io">3.5.1. File descriptors for I/O</h4>
-<div class="paragraph data-line-287">
+<div class="sect3 data-line-347">
+<h4 id="_file_descriptors_for_io">3.4.1. File descriptors for I/O</h4>
+<div class="paragraph data-line-348">
 <p>A file descriptor(often refered as <strong>file</strong>) is a small integer representing a kernel-managed <span class="green"><strong>object that a process may read from or write to</strong></span>. File descriptors are obtained by opening a file, directory or device. xv6 uses file descriptor as an index into a per-process table, so that every process has a private space of file descriptors starting at zero. By convention, a process:</p>
 </div>
-<div class="ulist data-line-289">
+<div class="ulist data-line-350">
 <ul>
-<li class="data-line-289">
+<li class="data-line-350">
 <p>reads from file descriptor 0(standard input)</p>
 </li>
-<li class="data-line-290">
+<li class="data-line-351">
 <p>writes to file descriptor 1(standard output)</p>
 </li>
-<li class="data-line-291">
+<li class="data-line-352">
 <p>writes error messages to file descriptor 2(std error)</p>
 </li>
 </ul>
 </div>
-<div class="paragraph data-line-293">
+<div class="paragraph data-line-354">
 <p>by default, these are the file descriptors for the console. The shell exploit this convention to implement I/O redirection and pipelines(eg: echo hello | wordCount).</p>
 </div>
-<div class="sect4 data-line-295">
+<div class="sect4 data-line-356">
 <h5 id="_reading_and_writing_into_a_file">Reading and writing into a file</h5>
-<div class="paragraph data-line-296">
+<div class="paragraph data-line-357">
 <p>Reading and writing is perform via system calls.</p>
 </div>
-<div class="ulist data-line-298">
+<div class="ulist data-line-359">
 <ul>
-<li class="data-line-298">
+<li class="data-line-359">
 <p>read(fd, buf, n): reads at most n bytes from the file descriptor fd, copies
 them into buf, and returns the number of bytes read.</p>
-<div class="ulist data-line-300">
+<div class="ulist data-line-361">
 <ul>
-<li class="data-line-300">
+<li class="data-line-361">
 <p>If no data is available, a read on a pipe waits for either data to be written or for all file descriptors referring to the write end to be closed; in the latter case, read will return 0, just as if the end of a data file had been reached.</p>
 </li>
 </ul>
 </div>
 </li>
-<li class="data-line-301">
+<li class="data-line-362">
 <p>write(fd, buf, n):writes n bytes from buf to the file descriptor fd and returns the number of bytes written.</p>
-<div class="ulist data-line-302">
+<div class="ulist data-line-363">
 <ul>
-<li class="data-line-302">
+<li class="data-line-363">
 <p>each write picks up where the previous one left off</p>
 </li>
 </ul>
@@ -1046,45 +1259,45 @@ them into buf, and returns the number of bytes read.</p>
 </div>
 </div>
 </div>
-<div class="sect3 data-line-304">
-<h4 id="_pipes">3.5.2. Pipes</h4>
-<div class="paragraph data-line-305">
+<div class="sect3 data-line-365">
+<h4 id="_pipes">3.4.2. Pipes</h4>
+<div class="paragraph data-line-366">
 <p>A pipe is a small kernel buffer exposed to processes as a pair of file descriptors (reading-fd, writing-fd). Writing data to one end of the pipe makes that data available for reading from the other end of the pipe, this is the way inter-process communications happens.</p>
 </div>
 </div>
-<div class="sect3 data-line-309">
-<h4 id="_file_system_and_links">3.5.3. file system and links</h4>
-<div class="sect4 data-line-310">
+<div class="sect3 data-line-370">
+<h4 id="_file_system_and_links">3.4.3. File system and links</h4>
+<div class="sect4 data-line-371">
 <h5 id="_file_system">File system</h5>
-<div class="paragraph data-line-311">
+<div class="paragraph data-line-372">
 <p>The directories form a tree, starting at a special directory called the root. A path like /a/b/c refers to the file or directory named c inside the directory named b inside the directory named a in the root directory /.</p>
 </div>
-<div class="paragraph data-line-313">
+<div class="paragraph data-line-374">
 <p>Paths that don’t begin with / are evaluated relative to the calling process’s current directory, which can
 be changed with the <strong>chdir()</strong> system call.</p>
 </div>
-<div class="paragraph data-line-316">
+<div class="paragraph data-line-377">
 <p>There are system calls to create new files and directories: <strong>mkdir()</strong> creates a new directory, <strong>open()</strong>
 with the O_CREATE flag creates a new data file, and <strong>mknod()</strong> creates a new device file.</p>
 </div>
 </div>
-<div class="sect4 data-line-319">
+<div class="sect4 data-line-380">
 <h5 id="_links">Links</h5>
-<div class="paragraph data-line-320">
+<div class="paragraph data-line-381">
 <p>A File-descriptor is also called <strong>inode</strong>, because it may have multiple names linking to the same object and some metadata. The <strong>link()</strong> system call creates another file-name referring to the same inode as an exist file.</p>
 </div>
-<div class="listingblock data-line-321">
+<div class="listingblock data-line-382">
 <div class="content">
 <pre class="highlight"><code class="language-C" data-lang="C">//Reading from or writing to "a" is the same as reading from or writing to "b". This is known as *symbolic links* in UNIX systems.
 open("a", O_CREATE|O_WRONLY);
 link("a", "b");</code></pre>
 </div>
 </div>
-<div class="paragraph data-line-328">
+<div class="paragraph data-line-389">
 <p>Finally, since file-descriptors/inodes have more information than name and some data, <strong>fstat()</strong> system call retrieves information from the inode that a file-name refers to. It
 fills in a struct <strong>stat</strong>, defined in stat.h (kernel/stat.h) as:</p>
 </div>
-<div class="listingblock data-line-331">
+<div class="listingblock data-line-392">
 <div class="content">
 <pre class="highlight"><code class="language-C" data-lang="C">#define T_DIR 1 // Directory
 #define T_FILE 2 // File
@@ -1102,92 +1315,92 @@ struct stat {
 </div>
 </div>
 </div>
-<div class="sect2 data-line-346">
-<h3 id="_memory_management">3.6. Memory Management</h3>
-<div class="paragraph data-line-348">
+<div class="sect2 data-line-407">
+<h3 id="_memory_management">3.5. Memory Management</h3>
+<div class="paragraph data-line-409">
 <p><strong>A) Cache: </strong></p>
 </div>
-<div class="paragraph data-line-350">
+<div class="paragraph data-line-411">
 <p>stores data so that future requests for that data can be served faster, the data stored in a cache might be the result of an earlier computation or a copy of data stored elsewhere. A cache hit occurs when the requested data can be found in a cache, while a cache miss occurs when it cannot. Cache hits are served by reading data from the cache, which is faster than recomputing a result or reading from a slower data store(ex. main memory); thus, the more requests that can be served from the cache, the faster the system performs(which is designed on the cache management).</p>
 </div>
-<div class="paragraph data-line-352">
+<div class="paragraph data-line-413">
 <p>For instance, most systems have an instruction cache to hold the instructions expected to be executed next. Without this cache, the would have to wait several cycles CPU while an instruction was fetched from main memory. If multiple processes affect the local copy of value A in cache, we must make sure to update and control the access for the most recent value of A, this is called “cache coherency”.</p>
 </div>
-<div class="paragraph data-line-354">
+<div class="paragraph data-line-415">
 <p><strong>C)	Main memory:</strong></p>
 </div>
-<div class="paragraph data-line-356">
+<div class="paragraph data-line-417">
 <p>R/W memory, usually too small to store all needed programs and data permanently. Volatile storage. Usually implemented in DRAM.</p>
 </div>
-<div class="paragraph data-line-358">
+<div class="paragraph data-line-419">
 <p><strong>D)	Virtual Memory:</strong></p>
 </div>
-<div class="paragraph data-line-360">
+<div class="paragraph data-line-421">
 <p>scheme that enables users to run programs larger than actual physical memory. Allows to abstract memory into a large, uniform storage array.</p>
 </div>
 </div>
-<div class="sect2 data-line-362">
-<h3 id="_virtualization_vs_interpretation">3.7. Virtualization Vs Interpretation:</h3>
-<div class="paragraph data-line-363">
+<div class="sect2 data-line-423">
+<h3 id="_virtualization_vs_interpretation">3.6. Virtualization Vs Interpretation:</h3>
+<div class="paragraph data-line-424">
 <p><strong>Virtualization: </strong>Allows OS to run applications within other OS. However, this emulation comes at a heavy price, every machine-level instructions must be translated to the equivalent function on the target system which often results in several target instructions.(An example of Virtual machine is Vmware or Vbox)</p>
 </div>
-<div class="imageblock data-line-366">
+<div class="imageblock data-line-427">
 <div class="content">
 <img src="images/7_virtualization.jpg" alt="7 virtualization">
 </div>
-<div class="title">Figure 7. virtualization</div>
+<div class="title">Figure 11. virtualization</div>
 </div>
-<div class="paragraph data-line-368">
+<div class="paragraph data-line-429">
 <p><strong>Interpretation:</strong> another type of emulation occurs when a computer language is not compiled to native code but instead is either executed in its high-level form or translated to an intermediate form. This is known as interpretation(Java is always interpreted, thats why we require a Java Virtual Machine).</p>
 </div>
 </div>
 </div>
 </div>
-<div class="sect1 data-line-378">
+<div class="sect1 data-line-439">
 <h2 id="_terminology">4. Terminology</h2>
 <div class="sectionbody">
-<div class="paragraph data-line-379">
+<div class="paragraph data-line-440">
 <p><strong>GNU</strong> is a collection of free software toola: GCC(GNU C compiler), glibc(GNU C Library), coreutils(GNU core utilities), GDB(GNU debugger), binutils(GNU binary utilities), GNU bash . GNU also has an operating system called Hurd but the most popular system "Linux" ONLY has GNU libraries with UNIX compatible tools which is often called GNU/Linux.</p>
 </div>
-<div class="paragraph data-line-381">
+<div class="paragraph data-line-442">
 <p><strong>UNIX</strong>, is a family of operating systems that derive or behave like AT&amp;T Unix(1969). Unix and Unix-like Operating Systems have been standarized to comply with POSIX standard. The main features of Unix that allowed it to create general-purpose reusable/modular programs that can be combined to create the first "scripting language" that enable us to produce complex workflows are:</p>
 </div>
-<div class="ulist data-line-383">
+<div class="ulist data-line-444">
 <ul>
-<li class="data-line-383">
+<li class="data-line-444">
 <p>tree filesystem</p>
 </li>
-<li class="data-line-384">
+<li class="data-line-445">
 <p>file descriptors</p>
 </li>
-<li class="data-line-385">
+<li class="data-line-446">
 <p>pipes</p>
 </li>
-<li class="data-line-386">
+<li class="data-line-447">
 <p>shell syntax operations</p>
 </li>
 </ul>
 </div>
-<div class="paragraph data-line-388">
+<div class="paragraph data-line-449">
 <p>xv6 implements Unix-like interface.</p>
 </div>
-<div class="paragraph data-line-390">
+<div class="paragraph data-line-451">
 <p><strong>POSIX</strong>, which stands for Portable Operating System Interface, represents a set of standards for UNIX-based operating systems. For example, having input in file descriptor 0 and output in file descriptor 1.</p>
 </div>
-<div class="paragraph data-line-392">
+<div class="paragraph data-line-453">
 <p>However, xv6 is NOT POSIX-compliant because it misses many system calls(like lseek and others) and also does not provide the notion of users or protecting one user from another(everything is root). Modern kernels, provide many more system calls, networking, windowing systems, user-level threads, drivers but our scope is to learn the basics, so xv6 is enough and simpler than many(although conceptually is implemented as a monolithic kernel).</p>
 </div>
-<div class="paragraph data-line-395">
+<div class="paragraph data-line-456">
 <p><strong>Linux</strong>: Its Just the GNU libraries, with many UNIX-compatible tools (compilers, editors, utilities) <strong>+ the kernel</strong> developed by Linus Torvalds(<strong>Linux</strong>)., resulting in GNU/Linux.</p>
 </div>
-<div class="paragraph data-line-397">
+<div class="paragraph data-line-458">
 <p><strong>Licenses</strong>: General Public License: This license was created with the goal of  forbid proprietary modifications or restriction of redistribution. Free Software Foundation, want to make sure that all versions of GNU and other softwares remain free. GPL requires that source code is distributed with any binaries and that t any changes made to the source code be released under the same GPL license.</p>
 </div>
-<div class="paragraph data-line-399">
+<div class="paragraph data-line-460">
 <p><strong>Appendix A: system calls</strong></p>
 </div>
-<table id="system-calls-xv6" class="tableblock frame-all grid-all stretch data-line-403">
-<caption class="title">Table 1. Available system calls in xv6</caption>
+<table id="system-calls-xv6" class="tableblock frame-all grid-all stretch data-line-464">
+<caption class="title">Table 2. Available system calls in xv6</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1288,7 +1501,7 @@ ELF format; only returns if error.</p></td>
 </tr>
 </tfoot>
 </table>
-<div class="paragraph data-line-429">
+<div class="paragraph data-line-490">
 <p>Note that system calls if no otherwise stated, return 0 for no error and -1 for error.</p>
 </div>
 </div>
@@ -1296,7 +1509,7 @@ ELF format; only returns if error.</p></td>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-09-04 12:31:08 -0500
+Last updated 2022-09-10 21:43:07 -0500
 </div>
 </div>
 </body>

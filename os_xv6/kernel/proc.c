@@ -275,12 +275,10 @@ fork(void)
   int i, pid;
   struct proc *np;
   struct proc *p = myproc();
-
   // Allocate process.
   if((np = allocproc()) == 0){
     return -1;
   }
-
   // Copy user memory from parent to child.
   if(uvmcopy(p->pagetable, np->pagetable, p->sz) < 0){
     freeproc(np);
@@ -288,6 +286,8 @@ fork(void)
     return -1;
   }
   np->sz = p->sz;
+
+  np->trace_mask = p->trace_mask; //copy tracemask
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
