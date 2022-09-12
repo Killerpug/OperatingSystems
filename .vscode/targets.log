@@ -7,7 +7,7 @@ make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --quest
 # There is NO WARRANTY, to the extent permitted by law.
  
 
-# Make data base, printed on Sun Sep 11 14:08:39 2022
+# Make data base, printed on Sun Sep 11 16:25:11 2022
 
 # Variables
 
@@ -47,7 +47,8 @@ PATHEXT = .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
 MAKEFILE_LIST := 
 # environment
 TMP = C:\Users\etapi\AppData\Local\Temp
-# environment
+# enviro 
+nment
 PROGRAMW6432 = C:\Program Files
 # environment
 PROGRAMDATA = C:\ProgramData
@@ -198,7 +199,8 @@ USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 # C:\Users\etapi\AppData\Local\GitHubDesktop\bin (key C:/Users/etapi/AppData/Local/GitHubDesktop/bin, mtime 1640633082): 4 files, no impossibilities.
 # C:\Users\etapi\AppData\Local\Programs\Microsoft VS Code\bin (key C:/Users/etapi/AppData/Local/Programs/Microsoft VS Code/bin, mtime 1662082809): 4 files, no impossibilities.
 # C:\WINDOWS\System32\WindowsPowerShell\v1.0\ (key C:/WINDOWS/System32/WindowsPowerShell/v1.0/, mtime 1641692386): 32 files, no impossibilities.
-# . (key c:/Users/etapi/OneDrive/Pictures/SelfLearning/PersonalProjects/Github/Operating_Systems, mtime 1655249797): 9 files, no impossibilities.
+# . (key c:/Users/etapi/OneDrive/Pictures/SelfLearning/PersonalProjects/Github/Operating_Systems, mtime 1655249797): 9 files, no impossibilit 
+ies.
 # C:\Users\etapi\.dotnet\tools: could not be stat'd.
 # C:\Program Files (x86)\Common Files\Oracle\Java\javapath (key C:/Program Files (x86)/Common Files/Oracle/Java/javapath, mtime 1661647537): 5 files, no impossibilities.
 # C:\Program Files\Git\cmd (key C:/Program Files/Git/cmd, mtime 1640716968): 8 files, no impossibilities.
@@ -275,14 +277,15 @@ GNUmakefile:
 
 # strcache buffers: 7 (4) / strings = 3706 / storage = 56643 B / avg = 15 B
 # current buf: size = 8174 B / used = 7679 B / count = 455 / avg = 16 B
-# other used: total = 48469 B / count = 3251 / avg = 14 B
+# othe 
+make.exe: *** No rule to make target 'all'.  Stop.
+
+r used: total = 48469 B / count = 3251 / avg = 14 B
 # other free: total = 80 B / max = 26 B / min = 5 B / avg = 13 B
 
 # strcache performance: lookups = 3837 / hit rate = 3%
 # hash-table stats:
 # Load=3706/8192=45%, Rehash=0, Collisions=1411/3837=37%
-# Finished Make data base on Sun Sep 11 14:08:39 2022
+# Finished Make data base on Sun Sep 11 16:25:11 2022
 
  
-make.exe: *** No rule to make target 'all'.  Stop.
-

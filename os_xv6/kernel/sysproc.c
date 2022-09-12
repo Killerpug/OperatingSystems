@@ -109,3 +109,27 @@ sys_trace(void)
 
   return 0;
 }
+
+uint64
+sys_sysinfo(void)
+{
+  uint64 user_sysinfo;            //pointer to the user sysinfo struct
+  uint64 free_bytes;
+  uint64 nproc_active;
+  struct proc *p = myproc();
+  
+  if(argaddr(0, &user_sysinfo) < 0)   //retrieve a pointer to the user sysinfo empty structure 
+  {  
+    return -1;
+  }
+  free_bytes = kfreemem_stat();
+  nproc_active = nproc();
+  // copy information into the user_sysinfo structure
+  if(copyout(p->pagetable, user_sysinfo, (char *)&free_bytes, sizeof(free_bytes)) < 0 ||
+  copyout(p->pagetable, user_sysinfo + sizeof(free_bytes), (char *)&nproc_active, sizeof(nproc_active)) < 0)
+  {
+    return -1;
+  }
+
+  return 0;
+}

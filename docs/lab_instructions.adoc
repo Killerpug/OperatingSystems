@@ -171,7 +171,7 @@ Keep in mind that the code for system calls is kept at:
 * The process-related code is kernel/proc.h and kernel/proc.c. 
 
 
-### System call tracing
+### Tracing syscalls
 *Goal*: Add a system call tracing feature. It should:
 
 * Take one argument, an integer "mask", whose bits specify which system calls to trace. For example, to trace the fork system call, a program calls trace(1 << SYS_fork), where SYS_fork is a syscall number from kernel/syscall.h. 
@@ -222,3 +222,15 @@ node "Memory"{
 
 }
 ....
+
+
+### Sysinfo 
+*Goal*: Collects information about the running system.
+
+* Takes one argument: a pointer to a struct sysinfo(kernel/sysinfo.h).
+* Kernel fills out sysinfo struct:
+** freemem is the number of bytes of free memory.
+** nproc is the number of processes whose state is not UNUSED.
+
+#### copyout
+copyout allows us to modify user structures from the kernel, via pointers.
