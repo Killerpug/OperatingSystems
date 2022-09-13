@@ -80,3 +80,18 @@ kalloc(void)
     memset((char*)r, 5, PGSIZE); // fill with junk
   return (void*)r;
 }
+
+uint64 
+kfreemem_stat(void)
+{
+  uint64 nbytes = 0;
+  acquire(&kmem.lock);
+  // iterate over free memory page-list
+  for(struct run *r = kmem.freelist; r; r = r->next)  // Returns 0 if the memory cannot be allocated.
+  {
+    nbytes += 1;
+  }
+  release(&kmem.lock);
+  printf("you have : %d bytes left\n", nbytes * 4096);
+  return nbytes * PGSIZE;
+}

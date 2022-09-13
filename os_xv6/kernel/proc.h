@@ -105,4 +105,5 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+  int trace_mask;              // Custom: allows per-process tracing of syscalls. Mask enables tracing by setting bit of the syscall number (1 << SYS_CALL_N)
 };
