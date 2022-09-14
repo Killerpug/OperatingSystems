@@ -499,7 +499,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_virtualization_vs_interpretation">3.6. Virtualization Vs Interpretation:</a></li>
 </ul>
 </li>
-<li><a href="#_terminology">4. Terminology</a></li>
+<li><a href="#_page_tables">4. Page tables</a>
+<ul class="sectlevel2">
+<li><a href="#_paging_hardware">4.1. Paging hardware</a></li>
+</ul>
+</li>
+<li><a href="#_terminology">5. Terminology</a></li>
 </ul>
 </div>
 </div>
@@ -1018,7 +1023,7 @@ This 2 modes are blurred in embedded systems, because they may not have an OS at
 <p>Programs can execute kernel services via system calls, which execute in a similar way to <a href="#interrupt-process">interrupt process overview</a> because systems calls are a special type of exceptions. <a href="#system-calls-xv6">Available system calls in xv6</a>, are the main interface for users to request  the execution of kernel resources (privileged-code that affects physical resources of the computer).</p>
 </div>
 <div class="paragraph data-line-238">
-<p>Internally RISC-V provides <span class="green"><strong>ecall</strong></span> to switch from user to kernel mode at an entry point specified by the kernel. The kernel evalues ecall with syscall-number as a parameter(this is basically a function pointer with all the valid system calls as described below).</p>
+<p>Internally RISC-V provides <span class="green"><strong>ecall</strong></span> to switch from user to kernel mode at an entry point specified by the kernel. The kernel evalues ecall with syscall-number as a parameter(xv6 uses a7, syscall is basically a function pointer with all the valid system calls as described below).</p>
 </div>
 <div class="listingblock data-line-240">
 <div class="content">
@@ -1356,50 +1361,101 @@ struct stat {
 </div>
 </div>
 </div>
-<div class="sect1 data-line-439">
-<h2 id="_terminology">4. Terminology</h2>
+<div class="sect1 data-line-433">
+<h2 id="_page_tables">4. Page tables</h2>
 <div class="sectionbody">
-<div class="paragraph data-line-440">
-<p><strong>GNU</strong> is a collection of free software toola: GCC(GNU C compiler), glibc(GNU C Library), coreutils(GNU core utilities), GDB(GNU debugger), binutils(GNU binary utilities), GNU bash . GNU also has an operating system called Hurd but the most popular system "Linux" ONLY has GNU libraries with UNIX compatible tools which is often called GNU/Linux.</p>
+<div class="paragraph data-line-434">
+<p>Page tables are the most popular mechanism through which the operating system provides each process with its own private address space and memory. They allow xv6 to isolate different process&#8217;s address spaces and to multiplex them onto a single physical memory.</p>
 </div>
-<div class="paragraph data-line-442">
-<p><strong>UNIX</strong>, is a family of operating systems that derive or behave like AT&amp;T Unix(1969). Unix and Unix-like Operating Systems have been standarized to comply with POSIX standard. The main features of Unix that allowed it to create general-purpose reusable/modular programs that can be combined to create the first "scripting language" that enable us to produce complex workflows are:</p>
+<div class="sect2 data-line-436">
+<h3 id="_paging_hardware">4.1. Paging hardware</h3>
+<div class="paragraph data-line-437">
+<p>RISC-V instructions (both user and kernel) manipulate virtual addresses. Since the machine&#8217;s RAM, or physical memory is indexed with physical addresses, RISC-V provides page-table hardware as the bridge between the virtual and physical addressses.</p>
 </div>
+<div class="paragraph data-line-439">
+<p>A page table is stored in physical memory as a 3-level tree structure. So the process of translating a virtual address into a physical is as follows(see <a href="#pagetable-addresstranslation">riscv pagetable address-translation</a>):</p>
+</div>
+<div class="olist arabic data-line-441">
+<ol class="arabic">
+<li class="data-line-441">
+<p>The first level(root tree) contains 512 Page Table Entries, which contain the Physical Page Number(PPN) for page-table in the next level.
+.
+virtual addresses use 39 bits out of the 64-bit(because XV6 runs with Sv39 RISC-V ISA):</p>
 <div class="ulist data-line-444">
 <ul>
 <li class="data-line-444">
-<p>tree filesystem</p>
+<p>The top 25 bits are unused.</p>
 </li>
 <li class="data-line-445">
-<p>file descriptors</p>
+<p>27 bits for Page Table Entry(PTE), divided into three 9-bit chunks which are used as PTE selectors for each of the three page tables.</p>
 </li>
 <li class="data-line-446">
+<p>12 bits for memory offset, we can select address within a page between 0-4096 bytes.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph data-line-448">
+<p>Each PTE contains 44-bit (34 for Physical Page Number and 10 for flags).</p>
+</div>
+<div class="paragraph data-line-450">
+<p>The above creates a 56 bit physical address(44 of PPN + 12 of byte offset).</p>
+</div>
+<div id="pagetable-addresstranslation" class="imageblock data-line-454">
+<div class="content">
+<img src="images/riscv_pagetable_addressTranslation.svg" alt="riscv pagetable addressTranslation">
+</div>
+<div class="title">Figure 12. riscv pagetable address-translation</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1 data-line-456">
+<h2 id="_terminology">5. Terminology</h2>
+<div class="sectionbody">
+<div class="paragraph data-line-457">
+<p><strong>GNU</strong> is a collection of free software toola: GCC(GNU C compiler), glibc(GNU C Library), coreutils(GNU core utilities), GDB(GNU debugger), binutils(GNU binary utilities), GNU bash . GNU also has an operating system called Hurd but the most popular system "Linux" ONLY has GNU libraries with UNIX compatible tools which is often called GNU/Linux.</p>
+</div>
+<div class="paragraph data-line-459">
+<p><strong>UNIX</strong>, is a family of operating systems that derive or behave like AT&amp;T Unix(1969). Unix and Unix-like Operating Systems have been standarized to comply with POSIX standard. The main features of Unix that allowed it to create general-purpose reusable/modular programs that can be combined to create the first "scripting language" that enable us to produce complex workflows are:</p>
+</div>
+<div class="ulist data-line-461">
+<ul>
+<li class="data-line-461">
+<p>tree filesystem</p>
+</li>
+<li class="data-line-462">
+<p>file descriptors</p>
+</li>
+<li class="data-line-463">
 <p>pipes</p>
 </li>
-<li class="data-line-447">
+<li class="data-line-464">
 <p>shell syntax operations</p>
 </li>
 </ul>
 </div>
-<div class="paragraph data-line-449">
+<div class="paragraph data-line-466">
 <p>xv6 implements Unix-like interface.</p>
 </div>
-<div class="paragraph data-line-451">
+<div class="paragraph data-line-468">
 <p><strong>POSIX</strong>, which stands for Portable Operating System Interface, represents a set of standards for UNIX-based operating systems. For example, having input in file descriptor 0 and output in file descriptor 1.</p>
 </div>
-<div class="paragraph data-line-453">
+<div class="paragraph data-line-470">
 <p>However, xv6 is NOT POSIX-compliant because it misses many system calls(like lseek and others) and also does not provide the notion of users or protecting one user from another(everything is root). Modern kernels, provide many more system calls, networking, windowing systems, user-level threads, drivers but our scope is to learn the basics, so xv6 is enough and simpler than many(although conceptually is implemented as a monolithic kernel).</p>
 </div>
-<div class="paragraph data-line-456">
+<div class="paragraph data-line-473">
 <p><strong>Linux</strong>: Its Just the GNU libraries, with many UNIX-compatible tools (compilers, editors, utilities) <strong>+ the kernel</strong> developed by Linus Torvalds(<strong>Linux</strong>)., resulting in GNU/Linux.</p>
 </div>
-<div class="paragraph data-line-458">
+<div class="paragraph data-line-475">
 <p><strong>Licenses</strong>: General Public License: This license was created with the goal of  forbid proprietary modifications or restriction of redistribution. Free Software Foundation, want to make sure that all versions of GNU and other softwares remain free. GPL requires that source code is distributed with any binaries and that t any changes made to the source code be released under the same GPL license.</p>
 </div>
-<div class="paragraph data-line-460">
+<div class="paragraph data-line-477">
 <p><strong>Appendix A: system calls</strong></p>
 </div>
-<table id="system-calls-xv6" class="tableblock frame-all grid-all stretch data-line-464">
+<table id="system-calls-xv6" class="tableblock frame-all grid-all stretch data-line-481">
 <caption class="title">Table 2. Available system calls in xv6</caption>
 <colgroup>
 <col style="width: 50%;">
@@ -1501,7 +1557,7 @@ ELF format; only returns if error.</p></td>
 </tr>
 </tfoot>
 </table>
-<div class="paragraph data-line-490">
+<div class="paragraph data-line-507">
 <p>Note that system calls if no otherwise stated, return 0 for no error and -1 for error.</p>
 </div>
 </div>
@@ -1509,7 +1565,7 @@ ELF format; only returns if error.</p></td>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-09-10 21:43:07 -0500
+Last updated 2022-09-13 21:54:09 -0500
 </div>
 </div>
 </body>

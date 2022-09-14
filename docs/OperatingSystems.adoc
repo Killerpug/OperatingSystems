@@ -430,10 +430,53 @@ image::7_virtualization.jpg[]
 
 
 
+## Page tables
+Page tables are the most popular mechanism through which the operating system provides each process with its own private address-space and memory. They allow xv6 to isolate different process's address spaces and to multiplex them onto a single physical memory.
+
+### Paging tree: virtual-physical mapping
+RISC-V instructions (both user and kernel) manipulate only virtual addresses. However, since the machine's RAM, or physical memory is indexed with physical addresses, RISC-V provides paging hardware that maps a virtual to a physical addressses.
+
+A *virtual addresses* use 39 bits (out of the 64-bit Word because XV6 runs with Sv39 RISC-V ISA):
+
+- The top 25 bits are unused.
+- 27 bits(Index block) serve as a Page Table Entry(PTE) selector, These 27 bits are divided into three 9-bit chunks since there are 3 different pagetable levels(pagetable is organized in a tree structure).
+- 12 bits for memory offset, we can select address within a [green]#*page*# between 0-4096 bytes.
+
+A pagetable consists of Page Table Entries(PTE) which contain 44-bits(34 for Physical Page Number(PPN) and 10 for flags). Pagetables are stored in physical memory and organized as a 3-level tree structure. So the process of translating a virtual address into a physical is as follows(see <<pagetable-addresstranslation>>):
+
+. The first-level/root-tree pagetable contains 512(2^9) Page Table Entries, which contains the PPN of the pagetable page in the next level(The top 9 bits of Index block in Virtual address are used for this purpose).
+. On level 2, we start in the pagetable page selected by L1 and we use the middle 9 bits of Index block in Virtual address to select the PPN in the pagetable page of L3.
+. On L3, is basically the same but the PPN is the actual Physical address of the memory sector.
+
+[[pagetable-addresstranslation]]
+.riscv pagetable address-translation
+image::riscv_pagetable_addressTranslation.svg[]
+
+The *physical address* is determined(as shown above) by the 3-level paging tree:
+
+- The top 44 bits are given by PPN of L3 pagetable. They represent the actual Physical start address of the memory sector.
+- The bottom 12 bits are directly taken from offset block in virtual address. They represent the offset from the start address, since each page has 4096 bytes we can select any byte from a page. 
 
 
+#### PTE flags
+The 10 bits of flags are used for:
 
+- Valid: wether PTE is present
+- Readabble: controls wether instructions are allowed to read to the page.
+- Writable: controls wether instructions are allowed to write to the page.
+- Executable: controls whether the CPU may interpret content of the page as instructions and execute them.
+- User: controls wether instructions in user mode are allowed to access the page.
 
+#### SATP register
+To start the pagin process, the kernel must write the physical address of the root pagetable page into the satp register. Each CPU has its own satp to allow different CPUs to run different processes.
+
+#### Paging tree performance
+The three-level structure allows a memory-efficient way of recording PTEs, because in the common case were an application uses only few pages starting at address zero, then entries 1-511 of the root tree are invalid and the kernel doesnt have to allocate those pages. Paging tree  *logically* has 2^27 PTEs.
+
+RISC-v CPU caches PTE in a Translation Look-aside Buffer(TLB) to avoid the cost of load-store 3 levels of the tree.
+
+#### Page-fault exception
+If any of the PTE required to translate an address is not present, the paging hardware raises a page-fault exception.
 
 
 ## Terminology
