@@ -501,7 +501,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_page_tables">4. Page tables</a>
 <ul class="sectlevel2">
-<li><a href="#_paging_hardware">4.1. Paging hardware</a></li>
+<li><a href="#_paging_tree_virtual_physical_mapping">4.1. Paging tree: virtual-physical mapping</a>
+<ul class="sectlevel3">
+<li><a href="#_pte_flags">4.1.1. PTE flags</a></li>
+<li><a href="#_satp_register">4.1.2. SATP register</a></li>
+<li><a href="#_paging_tree_performance">4.1.3. Paging tree performance</a></li>
+<li><a href="#_page_fault_exception">4.1.4. Page-fault exception</a></li>
+</ul>
+</li>
+<li><a href="#_kernel_address_space_mapping">4.2. Kernel address space mapping</a>
+<ul class="sectlevel4">
+<li><a href="#_memory_mapped_io">Memory mapped I/O</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_terminology">5. Terminology</a></li>
@@ -1365,97 +1377,196 @@ struct stat {
 <h2 id="_page_tables">4. Page tables</h2>
 <div class="sectionbody">
 <div class="paragraph data-line-434">
-<p>Page tables are the most popular mechanism through which the operating system provides each process with its own private address space and memory. They allow xv6 to isolate different process&#8217;s address spaces and to multiplex them onto a single physical memory.</p>
+<p>Page tables are the most popular mechanism through which the operating system provides each process with its own private address-space and memory. They allow xv6 to isolate different process&#8217;s address spaces and to multiplex them onto a single physical memory.</p>
 </div>
 <div class="sect2 data-line-436">
-<h3 id="_paging_hardware">4.1. Paging hardware</h3>
+<h3 id="_paging_tree_virtual_physical_mapping">4.1. Paging tree: virtual-physical mapping</h3>
 <div class="paragraph data-line-437">
-<p>RISC-V instructions (both user and kernel) manipulate virtual addresses. Since the machine&#8217;s RAM, or physical memory is indexed with physical addresses, RISC-V provides page-table hardware as the bridge between the virtual and physical addressses.</p>
+<p>RISC-V instructions (both user and kernel) manipulate only virtual addresses. However, since the machine&#8217;s RAM, or physical memory is indexed with physical addresses, RISC-V provides paging hardware that maps a virtual to a physical addressses.</p>
 </div>
 <div class="paragraph data-line-439">
-<p>A page table is stored in physical memory as a 3-level tree structure. So the process of translating a virtual address into a physical is as follows(see <a href="#pagetable-addresstranslation">riscv pagetable address-translation</a>):</p>
+<p>A <strong>virtual addresses</strong> use 39 bits (out of the 64-bit Word because XV6 runs with Sv39 RISC-V ISA):</p>
 </div>
-<div class="olist arabic data-line-441">
-<ol class="arabic">
-<li class="data-line-441">
-<p>The first level(root tree) contains 512 Page Table Entries, which contain the Physical Page Number(PPN) for page-table in the next level.
-.
-virtual addresses use 39 bits out of the 64-bit(because XV6 runs with Sv39 RISC-V ISA):</p>
-<div class="ulist data-line-444">
+<div class="ulist data-line-441">
 <ul>
-<li class="data-line-444">
+<li class="data-line-441">
 <p>The top 25 bits are unused.</p>
 </li>
-<li class="data-line-445">
-<p>27 bits for Page Table Entry(PTE), divided into three 9-bit chunks which are used as PTE selectors for each of the three page tables.</p>
+<li class="data-line-442">
+<p>27 bits(Index block) serve as a Page Table Entry(PTE) selector, These 27 bits are divided into three 9-bit chunks since there are 3 different pagetable levels(pagetable is organized in a tree structure).</p>
 </li>
-<li class="data-line-446">
-<p>12 bits for memory offset, we can select address within a page between 0-4096 bytes.</p>
+<li class="data-line-443">
+<p>12 bits for memory offset, we can select address within a <span class="green"><strong>page</strong></span> between 0-4096 bytes.</p>
 </li>
 </ul>
 </div>
+<div class="paragraph data-line-445">
+<p>A pagetable consists of Page Table Entries(PTE) which contain 54-bits(44 for Physical Page Number(PPN) and 10 for flags). Pagetables are stored in physical memory and organized as a 3-level tree structure. So the process of translating a virtual address into a physical is as follows(see <a href="#pagetable-addresstranslation">riscv pagetable address-translation</a>):</p>
+</div>
+<div class="olist arabic data-line-447">
+<ol class="arabic">
+<li class="data-line-447">
+<p>The first-level/root-tree pagetable contains 512(2^9) Page Table Entries, which contains the PPN of the pagetable page in the next level(The top 9 bits of Index block in Virtual address are used for this purpose).</p>
+</li>
+<li class="data-line-448">
+<p>On level 2, we start in the pagetable page selected by L1 and we use the middle 9 bits of Index block in Virtual address to select the PPN in the pagetable page of L3.</p>
+</li>
+<li class="data-line-449">
+<p>On L3, is basically the same but the output PPN is the actual Physical address of the <strong>page</strong> memory sector.</p>
 </li>
 </ol>
 </div>
-<div class="paragraph data-line-448">
-<p>Each PTE contains 44-bit (34 for Physical Page Number and 10 for flags).</p>
-</div>
-<div class="paragraph data-line-450">
-<p>The above creates a 56 bit physical address(44 of PPN + 12 of byte offset).</p>
-</div>
-<div id="pagetable-addresstranslation" class="imageblock data-line-454">
+<div id="pagetable-addresstranslation" class="imageblock data-line-453">
 <div class="content">
 <img src="images/riscv_pagetable_addressTranslation.svg" alt="riscv pagetable addressTranslation">
 </div>
 <div class="title">Figure 12. riscv pagetable address-translation</div>
 </div>
+<div class="paragraph data-line-455">
+<p>The <strong>page physical address</strong> is determined(as shown above) by the 3-level paging tree:</p>
+</div>
+<div class="ulist data-line-457">
+<ul>
+<li class="data-line-457">
+<p>The top 44 bits are given by PPN of L3 pagetable. They represent the actual Physical start address of the page memory sector.</p>
+</li>
+<li class="data-line-458">
+<p>The bottom 12 bits are directly taken from "offset block" in virtual address. They represent the offset from the start address, since each page has 4096 bytes from which we can select any byte from a page.</p>
+</li>
+</ul>
+</div>
+<div class="sect3 data-line-461">
+<h4 id="_pte_flags">4.1.1. PTE flags</h4>
+<div class="paragraph data-line-462">
+<p>The 10 bits of flags are used for:</p>
+</div>
+<div class="ulist data-line-464">
+<ul>
+<li class="data-line-464">
+<p>Valid: wether PTE is present</p>
+</li>
+<li class="data-line-465">
+<p>Readabble: controls wether instructions are allowed to read to the page.</p>
+</li>
+<li class="data-line-466">
+<p>Writable: controls wether instructions are allowed to write to the page.</p>
+</li>
+<li class="data-line-467">
+<p>Executable: controls whether the CPU may interpret content of the page as instructions and execute them.</p>
+</li>
+<li class="data-line-468">
+<p>User: controls wether instructions in user mode are allowed to access the page.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3 data-line-470">
+<h4 id="_satp_register">4.1.2. SATP register</h4>
+<div class="paragraph data-line-471">
+<p>To start the paging process, the kernel must write the physical address of the root pagetable page into the "<strong>satp register</strong>". Each CPU has its own satp to allow different CPUs to run different processes.</p>
+</div>
+</div>
+<div class="sect3 data-line-473">
+<h4 id="_paging_tree_performance">4.1.3. Paging tree performance</h4>
+<div class="paragraph data-line-474">
+<p>The three-level structure allows a memory-efficient way of recording PTEs, because in the common case were an application uses only few pages starting at address zero, then entries 1-511 of the root tree are invalid and the kernel doesnt have to allocate those pages. Paging tree  <strong>logically</strong> has 2^27 PTEs.</p>
+</div>
+<div class="paragraph data-line-476">
+<p>RISC-V CPU caches PTE in a Translation Look-aside Buffer(TLB) to avoid the cost of load-store 3 levels of the tree.</p>
+</div>
+</div>
+<div class="sect3 data-line-478">
+<h4 id="_page_fault_exception">4.1.4. Page-fault exception</h4>
+<div class="paragraph data-line-479">
+<p>If any of the PTE required to translate an address is not present, the paging hardware raises a page-fault exception.</p>
 </div>
 </div>
 </div>
-<div class="sect1 data-line-456">
+<div class="sect2 data-line-481">
+<h3 id="_kernel_address_space_mapping">4.2. Kernel address space mapping</h3>
+<div class="paragraph data-line-483">
+<p>XV6 maintains one pagetable tree per process for user address space and a single pagetable for kernel address space. The kernel configures the layout of its address space to give itself access to physical memory and hardware resources at <strong>predictable virtual addresses</strong>(see kernel/memlayout.h) by <strong>direct-mapping</strong>(virtual address = physical address) its own RAM(data + text) and devices(Disk, UART, PLIC&#8230;&#8203;).</p>
+</div>
+<div class="paragraph data-line-485">
+<p>However, there are a couple kernel virtual addresses that in addition to directly mapped has also user(pagetable tree) mappings:</p>
+</div>
+<div class="ulist data-line-487">
+<ul>
+<li class="data-line-487">
+<p>Trampoline page. Possess 2 mappings:</p>
+<div class="ulist data-line-488">
+<ul>
+<li class="data-line-488">
+<p>1 directly for kernel</p>
+</li>
+<li class="data-line-489">
+<p>1 shared between user and kernel at the top of the virtual address space to allow exchanging of information between user and kernel.</p>
+</li>
+</ul>
+</div>
+</li>
+<li class="data-line-490">
+<p>Kernel stack pages. Each process has its own kernel stack with a guard page that protects agains overflowing and overwriting to other kernel memory. Leaving guard pages is easier when using non-direct mapping so that we can use Pagetable Entries for guard pages(which have PTE_V valid bit disable to create panics instead of incorrect operation).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph data-line-493">
+<div class="title">XV6 direct mapping and memory mapped I/O</div>
+<p><span class="image"><img src="images/xv6_layout.svg" alt="xv6 layout"></span></p>
+</div>
+<div class="sect4 data-line-495">
+<h5 id="_memory_mapped_io">Memory mapped I/O</h5>
+<div class="paragraph data-line-496">
+<p>In addition to direct-mapping Device interfaces, the microprocessor uses <strong>memory-mapping</strong> to control/configure devices(I/O peripherals). A HW device, for example UART-module has configurable parameters(speed, data format, parity&#8230;&#8203;) and actions(send data, receive data) the module has all this information embedded in multiple configurable-registers stored at specific RAM locations(in UART0 case starts at 0x1000_0000). Controlling a HW device by writing to these RAM registers(in its specified memory range) is known as <strong>memory-mapped I/O</strong> because we are mapping our CPU memory into HW actions.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1 data-line-501">
 <h2 id="_terminology">5. Terminology</h2>
 <div class="sectionbody">
-<div class="paragraph data-line-457">
+<div class="paragraph data-line-502">
 <p><strong>GNU</strong> is a collection of free software toola: GCC(GNU C compiler), glibc(GNU C Library), coreutils(GNU core utilities), GDB(GNU debugger), binutils(GNU binary utilities), GNU bash . GNU also has an operating system called Hurd but the most popular system "Linux" ONLY has GNU libraries with UNIX compatible tools which is often called GNU/Linux.</p>
 </div>
-<div class="paragraph data-line-459">
+<div class="paragraph data-line-504">
 <p><strong>UNIX</strong>, is a family of operating systems that derive or behave like AT&amp;T Unix(1969). Unix and Unix-like Operating Systems have been standarized to comply with POSIX standard. The main features of Unix that allowed it to create general-purpose reusable/modular programs that can be combined to create the first "scripting language" that enable us to produce complex workflows are:</p>
 </div>
-<div class="ulist data-line-461">
+<div class="ulist data-line-506">
 <ul>
-<li class="data-line-461">
+<li class="data-line-506">
 <p>tree filesystem</p>
 </li>
-<li class="data-line-462">
+<li class="data-line-507">
 <p>file descriptors</p>
 </li>
-<li class="data-line-463">
+<li class="data-line-508">
 <p>pipes</p>
 </li>
-<li class="data-line-464">
+<li class="data-line-509">
 <p>shell syntax operations</p>
 </li>
 </ul>
 </div>
-<div class="paragraph data-line-466">
+<div class="paragraph data-line-511">
 <p>xv6 implements Unix-like interface.</p>
 </div>
-<div class="paragraph data-line-468">
+<div class="paragraph data-line-513">
 <p><strong>POSIX</strong>, which stands for Portable Operating System Interface, represents a set of standards for UNIX-based operating systems. For example, having input in file descriptor 0 and output in file descriptor 1.</p>
 </div>
-<div class="paragraph data-line-470">
+<div class="paragraph data-line-515">
 <p>However, xv6 is NOT POSIX-compliant because it misses many system calls(like lseek and others) and also does not provide the notion of users or protecting one user from another(everything is root). Modern kernels, provide many more system calls, networking, windowing systems, user-level threads, drivers but our scope is to learn the basics, so xv6 is enough and simpler than many(although conceptually is implemented as a monolithic kernel).</p>
 </div>
-<div class="paragraph data-line-473">
+<div class="paragraph data-line-518">
 <p><strong>Linux</strong>: Its Just the GNU libraries, with many UNIX-compatible tools (compilers, editors, utilities) <strong>+ the kernel</strong> developed by Linus Torvalds(<strong>Linux</strong>)., resulting in GNU/Linux.</p>
 </div>
-<div class="paragraph data-line-475">
+<div class="paragraph data-line-520">
 <p><strong>Licenses</strong>: General Public License: This license was created with the goal of  forbid proprietary modifications or restriction of redistribution. Free Software Foundation, want to make sure that all versions of GNU and other softwares remain free. GPL requires that source code is distributed with any binaries and that t any changes made to the source code be released under the same GPL license.</p>
 </div>
-<div class="paragraph data-line-477">
+<div class="paragraph data-line-522">
 <p><strong>Appendix A: system calls</strong></p>
 </div>
-<table id="system-calls-xv6" class="tableblock frame-all grid-all stretch data-line-481">
+<table id="system-calls-xv6" class="tableblock frame-all grid-all stretch data-line-526">
 <caption class="title">Table 2. Available system calls in xv6</caption>
 <colgroup>
 <col style="width: 50%;">
@@ -1557,7 +1668,7 @@ ELF format; only returns if error.</p></td>
 </tr>
 </tfoot>
 </table>
-<div class="paragraph data-line-507">
+<div class="paragraph data-line-552">
 <p>Note that system calls if no otherwise stated, return 0 for no error and -1 for error.</p>
 </div>
 </div>
@@ -1565,7 +1676,7 @@ ELF format; only returns if error.</p></td>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-09-13 21:54:09 -0500
+Last updated 2022-09-16 23:26:35 -0500
 </div>
 </div>
 </body>

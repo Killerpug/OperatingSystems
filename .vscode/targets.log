@@ -6,7 +6,7 @@ make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --quest
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Tue Sep 13 21:33:05 2022
+# Make data base, printed on Fri Sep 16 16:56:34 2022
 
 # Variables
 
@@ -33,6 +33,8 @@ CURDIR := c:/Users/etapi/OneDrive/Pictures/SelfLearning/PersonalProjects/Github/
 # default
 SHELL := sh.exe
 # environment
+CLION = C:\Program Files\JetBrains\CLion 2022.2.3\bin;
+# environment
 WINDIR = C:\WINDOWS
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
@@ -53,7 +55,7 @@ PROGRAMDATA = C:\ProgramData
 # environment
 VSCODE_CWD = C:\Users\etapi\AppData\Local\Programs\Microsoft VS Code
 # environment
-PATH = C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\Graphviz\bin;C:\Program Files\Graphviz\bin;C:\Program Files\Git\cmd;C:\MinGW\bin;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\dotnet\;c:\users\etapi\appdata\local\packages\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\localcache\local-packages\python310\site-packages;C:\Users\etapi\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts;C:\Program Files\Java\jre1.8.0_341\bin;C:\Program Files\Inkscape\bin;C:\Users\etapi\.cargo\bin;C:\Users\etapi\AppData\Local\Microsoft\WindowsApps;C:\Users\etapi\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\etapi\AppData\Local\GitHubDesktop\bin;C:\Users\etapi\.dotnet\tools
+PATH = C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\Graphviz\bin;C:\Program Files\Graphviz\bin;C:\Program Files\Git\cmd;C:\MinGW\bin;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\dotnet\;c:\users\etapi\appdata\local\packages\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\localcache\local-packages\python310\site-packages;C:\Users\etapi\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts;C:\Program Files\Java\jre1.8.0_341\bin;C:\Program Files\Inkscape\bin;C:\Users\etapi\.cargo\bin;C:\Users\etapi\AppData\Local\Microsoft\WindowsApps;C:\Users\etapi\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\etapi\AppData\Local\GitHubDesktop\bin;C:\Users\etapi\.dotnet\tools;C:\Program Files\JetBrains\CLion 2022.2.3\bin;
 # environment
 COMMONPROGRAMW6432 = C:\Program Files\Common Files
 # environment
@@ -73,7 +75,7 @@ ELECTRON_RUN_AS_NODE = 1
 # automatic
 %F = $(notdir $%)
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_12972_NEBKJDCKQJVNAQLR
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_21952_QMNMHOFTMZFUBMZZ
 # environment
 COMPUTERNAME = DESKTOP-2TGEBTR
 # environment
@@ -89,7 +91,7 @@ PUBLIC = C:\Users\Public
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
-VSCODE_CODE_CACHE_PATH = C:\Users\etapi\AppData\Roaming\Code\CachedData\784b0177c56c607789f9638da7b6bf3230d47a8c
+VSCODE_CODE_CACHE_PATH = C:\Users\etapi\AppData\Roaming\Code\CachedData\74b1f979648cc44d385a2286793c226e611f59e7
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
@@ -133,7 +135,7 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 158 Stepping 10, GenuineIntel
 # environment
 OS = Windows_NT
 # environment
-VSCODE_IPC_HOOK = \\.\pipe\9568594b0100de2bfeae99b5d3bebb85-1.71.0-main-sock
+VSCODE_IPC_HOOK = \\.\pipe\9568594b0100de2bfeae99b5d3bebb85-1.71.2-main-sock
 # environment
 HOMEPATH = \Users\etapi
 # environment
@@ -152,6 +154,8 @@ SYSTEMROOT = C:\WINDOWS
 +F = $(notdir $+)
 # environment
 APPDATA = C:\Users\etapi\AppData\Roaming
+# environment
+__COMPAT_LAYER = DetectorsAppHealth
 # environment
 TEMP = C:\Users\etapi\AppData\Local\Temp
 # environment
@@ -181,11 +185,11 @@ LANG = C
 # environment
 PROCESSOR_LEVEL = 6
 # environment
-VSCODE_PID = 12972
+VSCODE_PID = 21952
 # environment
 USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 # variable set hash-table stats:
-# Load=87/1024=8%, Rehash=0, Collisions=11/103=11%
+# Load=89/1024=9%, Rehash=0, Collisions=11/105=10%
 
 # Pattern-specific Variable Values
 
@@ -195,7 +199,7 @@ USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 
 # C:\ProgramData\DockerDesktop\version-bin: could not be stat'd.
 # C:\Users\etapi\AppData\Local\GitHubDesktop\bin (key C:/Users/etapi/AppData/Local/GitHubDesktop/bin, mtime 1640633082): 4 files, no impossibilities.
-# C:\Users\etapi\AppData\Local\Programs\Microsoft VS Code\bin (key C:/Users/etapi/AppData/Local/Programs/Microsoft VS Code/bin, mtime 1662082809): 4 files, no impossibilities.
+# C:\Users\etapi\AppData\Local\Programs\Microsoft VS Code\bin (key C:/Users/etapi/AppData/Local/Programs/Microsoft VS Code/bin, mtime 1663302075): 4 files, no impossibilities.
 # C:\WINDOWS\System32\WindowsPowerShell\v1.0\ (key C:/WINDOWS/System32/WindowsPowerShell/v1.0/, mtime 1641692386): 32 files, no impossibilities.
 # . (key c:/Users/etapi/OneDrive/Pictures/SelfLearning/PersonalProjects/Github/Operating_Systems, mtime 1655249797): 9 files, no impossibilities.
 # C:\Users\etapi\.dotnet\tools: could not be stat'd.
@@ -212,12 +216,13 @@ USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 # C:\Users\etapi\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts (key C:/Users/etapi/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0/LocalCache/local-packages/Python310/Scripts, mtime 1661636922): 13 files, no impossibilities.
 # C:\Program Files\Java\jre1.8.0_341\bin (key C:/Program Files/Java/jre1.8.0_341/bin, mtime 1661647535): 130 files, no impossibilities.
 # C:\Program Files\dotnet\ (key C:/Program Files/dotnet/, mtime 1660507397): 12 files, no impossibilities.
-# C:\WINDOWS\system32 (key C:/WINDOWS/system32, mtime 1663122190): 2958 files, no impossibilities.
+# C:\WINDOWS\system32 (key C:/WINDOWS/system32, mtime 1663337536): 2958 files, no impossibilities.
 # C:\Program Files\Graphviz\bin (key C:/Program Files/Graphviz/bin, mtime 1640485429): 60 files, no impossibilities.
 # c:\users\etapi\appdata\local\packages\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\localcache\local-packages\python310\site-packages (key c:/users/etapi/appdata/local/packages/pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0/localcache/local-packages/python310/site-packages, mtime 1661636920): 30 files, no impossibilities.
 # C:\Users\etapi\AppData\Local\Microsoft\WindowsApps (key C:/Users/etapi/AppData/Local/Microsoft/WindowsApps, mtime 1663091123): 32 files, no impossibilities.
+# C:\Program Files\JetBrains\CLion 2022.2.3\bin (key C:/Program Files/JetBrains/CLion 2022.2.3/bin, mtime 1663337119): 36 files, no impossibilities.
 
-# 3948 files, no impossibilities in 23 directories.
+# 3984 files, no impossibilities in 24 directories.
 
 # Implicit Rules
 
@@ -273,15 +278,15 @@ GNUmakefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 8 (6) / strings = 3834 / storage = 58830 B / avg = 15 B
-# current buf: size = 8174 B / used = 1677 B / count = 94 / avg = 17 B
-# other used: total = 50656 B / count = 3740 / avg = 13 B
+# strcache buffers: 8 (6) / strings = 3868 / storage = 59266 B / avg = 15 B
+# current buf: size = 8174 B / used = 2113 B / count = 128 / avg = 16 B
+# other used: total = 51092 B / count = 3740 / avg = 13 B
 # other free: total = 65 B / max = 14 B / min = 4 B / avg = 9 B
 
-# strcache performance: lookups = 3979 / hit rate = 3%
+# strcache performance: lookups = 4016 / hit rate = 3%
 # hash-table stats:
-# Load=3834/8192=47%, Rehash=0, Collisions=1564/3979=39%
-# Finished Make data base on Tue Sep 13 21:33:05 2022
+# Load=3868/8192=47%, Rehash=0, Collisions=1578/4016=39%
+# Finished Make data base on Fri Sep 16 16:56:34 2022
 
  
 make.exe: *** No rule to make target 'all'.  Stop.
