@@ -5,8 +5,9 @@ make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --quest
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
+ 
 
-# Make data base, printed on Fri Sep 16 16:56:34 2022
+# Make data base, printed on Sun Sep 18 18:08:23 2022
 
 # Variables
 
@@ -75,7 +76,7 @@ ELECTRON_RUN_AS_NODE = 1
 # automatic
 %F = $(notdir $%)
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_21952_QMNMHOFTMZFUBMZZ
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_25444_CYUWUVYVEAAYBHRU
 # environment
 COMPUTERNAME = DESKTOP-2TGEBTR
 # environment
@@ -155,8 +156,6 @@ SYSTEMROOT = C:\WINDOWS
 # environment
 APPDATA = C:\Users\etapi\AppData\Roaming
 # environment
-__COMPAT_LAYER = DetectorsAppHealth
-# environment
 TEMP = C:\Users\etapi\AppData\Local\Temp
 # environment
 COMSPEC = C:\WINDOWS\system32\cmd.exe
@@ -185,11 +184,11 @@ LANG = C
 # environment
 PROCESSOR_LEVEL = 6
 # environment
-VSCODE_PID = 21952
+VSCODE_PID = 25444
 # environment
 USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 # variable set hash-table stats:
-# Load=89/1024=9%, Rehash=0, Collisions=11/105=10%
+# Load=88/1024=9%, Rehash=0, Collisions=11/104=11%
 
 # Pattern-specific Variable Values
 
@@ -216,7 +215,7 @@ USERDOMAIN_ROAMINGPROFILE = DESKTOP-2TGEBTR
 # C:\Users\etapi\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts (key C:/Users/etapi/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0/LocalCache/local-packages/Python310/Scripts, mtime 1661636922): 13 files, no impossibilities.
 # C:\Program Files\Java\jre1.8.0_341\bin (key C:/Program Files/Java/jre1.8.0_341/bin, mtime 1661647535): 130 files, no impossibilities.
 # C:\Program Files\dotnet\ (key C:/Program Files/dotnet/, mtime 1660507397): 12 files, no impossibilities.
-# C:\WINDOWS\system32 (key C:/WINDOWS/system32, mtime 1663337536): 2958 files, no impossibilities.
+# C:\WINDOWS\system32 (key C:/WINDOWS/system32, mtime 1663470487): 2958 files, no impossibilities.
 # C:\Program Files\Graphviz\bin (key C:/Program Files/Graphviz/bin, mtime 1640485429): 60 files, no impossibilities.
 # c:\users\etapi\appdata\local\packages\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\localcache\local-packages\python310\site-packages (key c:/users/etapi/appdata/local/packages/pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0/localcache/local-packages/python310/site-packages, mtime 1661636920): 30 files, no impossibilities.
 # C:\Users\etapi\AppData\Local\Microsoft\WindowsApps (key C:/Users/etapi/AppData/Local/Microsoft/WindowsApps, mtime 1663091123): 32 files, no impossibilities.
@@ -286,7 +285,7 @@ GNUmakefile:
 # strcache performance: lookups = 4016 / hit rate = 3%
 # hash-table stats:
 # Load=3868/8192=47%, Rehash=0, Collisions=1578/4016=39%
-# Finished Make data base on Fri Sep 16 16:56:34 2022
+# Finished Make data base on Sun Sep 18 18:08:23 2022
 
  
 make.exe: *** No rule to make target 'all'.  Stop.
