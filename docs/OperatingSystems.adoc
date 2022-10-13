@@ -518,9 +518,49 @@ NOTE: In addition kvminithart flushes CPU TLB cache(using *sfence.vma* instructi
 
 
 ### Physical Memory allocation
-The kernel must allocate and free physical memory at run-time for page tables, user memory, kernel stacks, and pipe buffers.
+The kernel must allocate and free physical memory at run-time for: user memory, kernel stacks, pipe buffers...
 
-xv6 uses the physical memory between the end of the kernel and PHYSTOP for run-time allocation. It allocates and frees whole 4096-byte pages at a time. It keeps track of which pages are free by threading a linked list through the pages themselves. Allocation consists of removing a page from the linked list; freeing consists of adding the freed page to the list.
+xv6 uses the physical memory between the *end of the kernel and PHYSTOP* for run-time allocation. It allocates and frees whole 4096-byte pages at a time. It keeps track of which pages are free by threading a linked list through the pages themselves. Allocation consists of removing a page from the linked list; freeing consists of adding the freed page to the list. see kernel/kalloc.c for more details.
+
+#### Allocator
+
+The allocator is a linked-list structure, kinit initializes *kmem.freelist*   to hold all free-memory(memory between the end of the kernel and PHYSTOP, which is 128MB) in chunks of PAGESIZE(4096). Allocator, stores in the location of page(n) the pointer to the next page which is null for the last available page(page0) or page(n-1) for any other page.
+
+.Pages
+[plantuml, target=page_allocator, format=png]
+....
+node "page0 (memory location = &KernelEnd)" as page0mem{
+[pointer to next page] as page0next
+}
+
+node "page1 (memory location = &KernelEnd + 1*PAGESIZE)" as page1mem{
+[pointer to next page] as page1next
+}
+
+node "page2 (memory location = &KernelEnd + 2*PAGESIZE)" as page2mem {
+[pointer to next page(*next)] as page2next
+}
+[kmem.freelist] --> page2mem
+page0next --> [Null]
+page1next --> page0mem
+page2next --> page1mem
+
+....
+
+The list is wrapped with a lock to allow only 1 process to read/write the page resource, avoiding: allocation the same page, overwriting a free page in case of a race condition, among other multicore programming problems.
+
+#### kfree() 
+The function kfree begins by setting every byte in the memory being freed to the value 1, in the freed page adds a pointer to kmem.freelist(which points to the outest/first available page(it works like a stack)) and updates freelist to contain the new page.
+
+#### kalloc()
+The function kalloc takes the last page by updating the freelist pointer to the next page and fills memory of taken page with value 5.
+
+#### Process address space
+Each process has a separate pagetable. Different process pagetables translate to different pages of physical memory; xv6 uses a process's pagetable not just to tell the hardware how to map user virtual addresses, but also is the *only record of which physical memory pages are allocated to that process*.
+
+### srbk: shrink and grow process memory
+
+srbk is a systemcall for a process to shrink or grow its memory.  It's implemented by growproc() on kernel/proc.c.
 
 ## Terminology
 *GNU* is a collection of free software toola: GCC(GNU C compiler), glibc(GNU C Library), coreutils(GNU core utilities), GDB(GNU debugger), binutils(GNU binary utilities), GNU bash . GNU also has an operating system called Hurd but the most popular system "Linux" ONLY has GNU libraries with UNIX compatible tools which is often called GNU/Linux.
