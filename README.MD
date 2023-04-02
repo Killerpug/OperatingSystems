@@ -1,3 +1,7 @@
+# Read documentation
+Documentation is written in ascii docs. There are multiple ways in which you can get an asciidoc viewer/editor.
+- Installing [AsciiDoc extension in VSCode](https://marketplace.visualstudio.com/items?itemName=asciidoctor.asciidoctor-vscode). In addition select use kroki in extension settings to allow generation of diagrams such as Plantuml. (Recommended)
+- Install an application such as [Asciidoctor](https://asciidoc.org/) or [Asciidocfx](https://asciidocfx.com/)
 
 
 
