@@ -518,7 +518,7 @@ NOTE: In addition kvminithart flushes CPU TLB cache(using *sfence.vma* instructi
 
 
 ### Physical Memory allocation
-The kernel must allocate and free physical memory at run-time for: user memory, kernel stacks, pipe buffers...
+The kernel must allocate and free physical memory at run-time for: user memory, kernel stacks, pipe buffers, mainly...
 
 xv6 uses the physical memory between the *end of the kernel and PHYSTOP* for run-time allocation. It allocates and frees whole 4096-byte pages at a time. It keeps track of which pages are free by threading a linked list through the pages themselves. Allocation consists of removing a page from the linked list; freeing consists of adding the freed page to the list. see kernel/kalloc.c for more details.
 
