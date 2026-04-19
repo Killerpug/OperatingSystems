@@ -136,7 +136,7 @@ An operating systems acts as an intermediary between the applications in a compu
 * Abstract: hardware for portability and convinience.
 * Multiplexing: allow multiple applications to share hardware and cooperate while isolating programs to provide security.
 
-##### OS Responsibilities
+#### OS Responsibilities
 
 * Scheduling processes and threads on the CPUs. And allocating the pertinent resources.
 * Creating and deleting both user and system processes.
