@@ -44,6 +44,7 @@ fsinit(int dev) {
   if(sb.magic != FSMAGIC)
     panic("invalid file system");
   initlog(dev, &sb);
+  ireclaim(dev);
 }
 
 // Zero a block.
@@ -61,6 +62,7 @@ bzero(int dev, int bno)
 // Blocks.
 
 // Allocate a zeroed disk block.
+// returns 0 if out of disk space.
 static uint
 balloc(uint dev)
 {
@@ -82,7 +84,8 @@ balloc(uint dev)
     }
     brelse(bp);
   }
-  panic("balloc: out of blocks");
+  printf("balloc: out of blocks\n");
+  return 0;
 }
 
 // Free a disk block.
@@ -109,8 +112,8 @@ bfree(int dev, uint b)
 // its size, the number of links referring to it, and the
 // list of blocks holding the file's content.
 //
-// The inodes are laid out sequentially on disk at
-// sb.startinode. Each inode has a number, indicating its
+// The inodes are laid out sequentially on disk at block
+// sb.inodestart. Each inode has a number, indicating its
 // position on the disk.
 //
 // The kernel keeps a table of in-use inodes in memory
@@ -191,7 +194,8 @@ static struct inode* iget(uint dev, uint inum);
 
 // Allocate an inode on device dev.
 // Mark it as allocated by  giving it type type.
-// Returns an unlocked but allocated and referenced inode.
+// Returns an unlocked but allocated and referenced inode,
+// or NULL if there is no free inode.
 struct inode*
 ialloc(uint dev, short type)
 {
@@ -211,7 +215,8 @@ ialloc(uint dev, short type)
     }
     brelse(bp);
   }
-  panic("ialloc: no inodes");
+  printf("ialloc: no inodes\n");
+  return 0;
 }
 
 // Copy a modified in-memory inode to disk.
@@ -365,6 +370,28 @@ iunlockput(struct inode *ip)
   iput(ip);
 }
 
+void
+ireclaim(int dev)
+{
+  for (int inum = 1; inum < sb.ninodes; inum++) {
+    struct inode *ip = 0;
+    struct buf *bp = bread(dev, IBLOCK(inum, sb));
+    struct dinode *dip = (struct dinode *)bp->data + inum % IPB;
+    if (dip->type != 0 && dip->nlink == 0) {  // is an orphaned inode
+      printf("ireclaim: orphaned inode %d\n", inum);
+      ip = iget(dev, inum);
+    }
+    brelse(bp);
+    if (ip) {
+      begin_op();
+      ilock(ip);
+      iunlock(ip);
+      iput(ip);
+      end_op();
+    }
+  }
+}
+
 // Inode content
 //
 // The content (data) associated with each inode is stored
@@ -374,6 +401,7 @@ iunlockput(struct inode *ip)
 
 // Return the disk block address of the nth block in inode ip.
 // If there is no such block, bmap allocates one.
+// returns 0 if out of disk space.
 static uint
 bmap(struct inode *ip, uint bn)
 {
@@ -381,21 +409,32 @@ bmap(struct inode *ip, uint bn)
   struct buf *bp;
 
   if(bn < NDIRECT){
-    if((addr = ip->addrs[bn]) == 0)
-      ip->addrs[bn] = addr = balloc(ip->dev);
+    if((addr = ip->addrs[bn]) == 0){
+      addr = balloc(ip->dev);
+      if(addr == 0)
+        return 0;
+      ip->addrs[bn] = addr;
+    }
     return addr;
   }
   bn -= NDIRECT;
 
   if(bn < NINDIRECT){
     // Load indirect block, allocating if necessary.
-    if((addr = ip->addrs[NDIRECT]) == 0)
-      ip->addrs[NDIRECT] = addr = balloc(ip->dev);
+    if((addr = ip->addrs[NDIRECT]) == 0){
+      addr = balloc(ip->dev);
+      if(addr == 0)
+        return 0;
+      ip->addrs[NDIRECT] = addr;
+    }
     bp = bread(ip->dev, addr);
     a = (uint*)bp->data;
     if((addr = a[bn]) == 0){
-      a[bn] = addr = balloc(ip->dev);
-      log_write(bp);
+      addr = balloc(ip->dev);
+      if(addr){
+        a[bn] = addr;
+        log_write(bp);
+      }
     }
     brelse(bp);
     return addr;
@@ -464,7 +503,10 @@ readi(struct inode *ip, int user_dst, uint64 dst, uint off, uint n)
     n = ip->size - off;
 
   for(tot=0; tot<n; tot+=m, off+=m, dst+=m){
-    bp = bread(ip->dev, bmap(ip, off/BSIZE));
+    uint addr = bmap(ip, off/BSIZE);
+    if(addr == 0)
+      break;
+    bp = bread(ip->dev, addr);
     m = min(n - tot, BSIZE - off%BSIZE);
     if(either_copyout(user_dst, dst, bp->data + (off % BSIZE), m) == -1) {
       brelse(bp);
@@ -495,7 +537,10 @@ writei(struct inode *ip, int user_src, uint64 src, uint off, uint n)
     return -1;
 
   for(tot=0; tot<n; tot+=m, off+=m, src+=m){
-    bp = bread(ip->dev, bmap(ip, off/BSIZE));
+    uint addr = bmap(ip, off/BSIZE);
+    if(addr == 0)
+      break;
+    bp = bread(ip->dev, addr);
     m = min(n - tot, BSIZE - off%BSIZE);
     if(either_copyin(bp->data + (off % BSIZE), user_src, src, m) == -1) {
       brelse(bp);
@@ -553,6 +598,7 @@ dirlookup(struct inode *dp, char *name, uint *poff)
 }
 
 // Write a new directory entry (name, inum) into the directory dp.
+// Returns 0 on success, -1 on failure (e.g. out of disk blocks).
 int
 dirlink(struct inode *dp, char *name, uint inum)
 {
@@ -577,7 +623,7 @@ dirlink(struct inode *dp, char *name, uint inum)
   strncpy(de.name, name, DIRSIZ);
   de.inum = inum;
   if(writei(dp, 0, (uint64)&de, off, sizeof(de)) != sizeof(de))
-    panic("dirlink");
+    return -1;
 
   return 0;
 }

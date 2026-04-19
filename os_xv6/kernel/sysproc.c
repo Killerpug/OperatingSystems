@@ -1,19 +1,18 @@
 #include "types.h"
 #include "riscv.h"
 #include "defs.h"
-#include "date.h"
 #include "param.h"
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "vm.h"
 
 uint64
 sys_exit(void)
 {
   int n;
-  if(argint(0, &n) < 0)
-    return -1;
-  exit(n);
+  argint(0, &n);
+  kexit(n);
   return 0;  // not reached
 }
 
@@ -26,44 +25,56 @@ sys_getpid(void)
 uint64
 sys_fork(void)
 {
-  return fork();
+  return kfork();
 }
 
 uint64
 sys_wait(void)
 {
   uint64 p;
-  if(argaddr(0, &p) < 0)
-    return -1;
-  return wait(p);
+  argaddr(0, &p);
+  return kwait(p);
 }
 
 uint64
 sys_sbrk(void)
 {
-  int addr;
+  uint64 addr;
+  int t;
   int n;
 
-  if(argint(0, &n) < 0)
-    return -1;
+  argint(0, &n);
+  argint(1, &t);
   addr = myproc()->sz;
-  if(growproc(n) < 0)
-    return -1;
+
+  if(t == SBRK_EAGER || n < 0) {
+    if(growproc(n) < 0) {
+      return -1;
+    }
+  } else {
+    // Lazily allocate memory for this process: increase its memory
+    // size but don't allocate memory. If the processes uses the
+    // memory, vmfault() will allocate it.
+    if(addr + n < addr)
+      return -1;
+    myproc()->sz += n;
+  }
   return addr;
 }
 
 uint64
-sys_sleep(void)
+sys_pause(void)
 {
   int n;
   uint ticks0;
 
-  if(argint(0, &n) < 0)
-    return -1;
+  argint(0, &n);
+  if(n < 0)
+    n = 0;
   acquire(&tickslock);
   ticks0 = ticks;
   while(ticks - ticks0 < n){
-    if(myproc()->killed){
+    if(killed(myproc())){
       release(&tickslock);
       return -1;
     }
@@ -78,9 +89,8 @@ sys_kill(void)
 {
   int pid;
 
-  if(argint(0, &pid) < 0)
-    return -1;
-  return kill(pid);
+  argint(0, &pid);
+  return kkill(pid);
 }
 
 // return how many clock tick interrupts have occurred
@@ -94,42 +104,4 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
-}
-
-
-uint64 
-sys_trace(void)
-{
-  int syscall_mask = 0;
-  
-  if(argint(0, &syscall_mask) < 0)
-    return -1;
-  struct proc *p = myproc();
-  p->trace_mask = syscall_mask;
-
-  return 0;
-}
-
-uint64
-sys_sysinfo(void)
-{
-  uint64 user_sysinfo;            //pointer to the user sysinfo struct
-  uint64 free_bytes;
-  uint64 nproc_active;
-  struct proc *p = myproc();
-  
-  if(argaddr(0, &user_sysinfo) < 0)   //retrieve a pointer to the user sysinfo empty structure 
-  {  
-    return -1;
-  }
-  free_bytes = kfreemem_stat();
-  nproc_active = nproc();
-  // copy information into the user_sysinfo structure
-  if(copyout(p->pagetable, user_sysinfo, (char *)&free_bytes, sizeof(free_bytes)) < 0 ||
-  copyout(p->pagetable, user_sysinfo + sizeof(free_bytes), (char *)&nproc_active, sizeof(nproc_active)) < 0)
-  {
-    return -1;
-  }
-
-  return 0;
 }

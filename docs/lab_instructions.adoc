@@ -15,8 +15,13 @@ For this class you'll need the RISC-V versions of a couple different tools: QEMU
 
 [source,bash]
 ....
+# ubuntu
 $ sudo apt-get update && sudo apt-get upgrade
 $ sudo apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu
+
+# arch
+sudo pacman -S riscv64-linux-gnu-binutils riscv64-linux-gnu-gcc riscv64-linux-gnu-gdb qemu-emulators-full bc git base-devel
+
 ....
 From Windows, you can access all of your WSL files under the "\\wsl$\" directory. For instance, the home directory for an Ubuntu 20.04 installation should be at "\\wsl$\Ubuntu-20.04\home\<username>\". 
 
@@ -28,7 +33,7 @@ To test your installation, you should be able to compile and run xv6.
 $ make qemu
 ....
 
-NOTE: to quit qemu type Ctrl-a x
+NOTE: to quit qemu type Ctrl-a(at the same time), then x
 
 
 
